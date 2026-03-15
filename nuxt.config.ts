@@ -40,7 +40,12 @@ export default defineNuxtConfig({
     }],
   },
 
-  plugins: ['@/plugins/vuetify/index.ts', '@/plugins/iconify/index.ts'],
+  plugins: [
+    '@/plugins/vuetify/index.ts',
+    '@/plugins/iconify/index.ts',
+    '@/plugins/toast.ts',
+    '@/plugins/sweetalert2.ts',
+  ],
 
   imports: {
     dirs: ['./@core/utils', './@core/composable/', './plugins/*/composables/*'],
