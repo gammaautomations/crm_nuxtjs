@@ -1,5 +1,11 @@
-export default defineNuxtRouteMiddleware(() => {
-  // Aquí más adelante verificarás la sesión real
-  // Por ahora redirige siempre al login para probar
-  return navigateTo('/login')
+export default defineNuxtRouteMiddleware(async to => {
+  const authStore = useAuthStore()
+
+  // Si no hay usuario en el store, intenta recuperarlo del token
+  if (!authStore.isLoggedIn)
+    await authStore.fetchMe()
+
+  // Si sigue sin estar logueado, redirige al login
+  if (!authStore.isLoggedIn)
+    return navigateTo('/login')
 })

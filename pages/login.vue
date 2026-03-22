@@ -13,14 +13,9 @@ import { themeConfig } from '@themeConfig'
 definePageMeta({
   layout: 'blank',
   public: true,
-
 })
 
-const form = ref({
-  email: '',
-  password: '',
-  remember: false,
-})
+const { form, loading, errorMsg, v$, login } = useAuth()
 
 const isPasswordVisible = ref(false)
 
@@ -93,7 +88,7 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
           </p>
         </VCardText>
         <VCardText>
-          <VForm @submit.prevent="() => {}">
+          <VForm @submit.prevent="login">
             <VRow>
               <!-- email -->
               <VCol cols="12">
@@ -103,6 +98,8 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                   label="Correo electrónico"
                   type="email"
                   placeholder="Introduzca un correo electrónico válido"
+                  :error-messages="v$.email.$errors.map(e => e.$message as string)"
+                  @blur="v$.email.$touch"
                 />
               </VCol>
 
@@ -115,6 +112,8 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                   :type="isPasswordVisible ? 'text' : 'password'"
                   autocomplete="password"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :error-messages="v$.password.$errors.map(e => e.$message as string)"
+                  @blur="v$.password.$touch"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
@@ -131,11 +130,22 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                   </a>
                 </div>
 
+                <!-- Error general -->
+                <VAlert
+                  v-if="errorMsg"
+                  type="error"
+                  class="mb-4"
+                  density="compact"
+                >
+                  {{ errorMsg }}
+                </VAlert>
+
                 <VBtn
                   block
                   type="submit"
+                  :loading="loading"
                 >
-                  Login
+                  Iniciar sesión
                 </VBtn>
               </VCol>
 

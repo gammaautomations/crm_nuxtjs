@@ -48,7 +48,12 @@ export default defineNuxtConfig({
   ],
 
   imports: {
-    dirs: ['./@core/utils', './@core/composable/', './plugins/*/composables/*'],
+    dirs: [
+      './@core/utils',
+      './@core/composable/',
+      './plugins/*/composables/*',
+      './composables/auth',
+    ],
   },
 
   hooks: {},
@@ -149,6 +154,7 @@ export default defineNuxtConfig({
     mongoHost: process.env.MONGO_HOST,
     mongoPort: process.env.MONGO_PORT,
     mongoDataBase: process.env.MONGO_DATA_BASE,
+    jwtSecret: process.env.JWT_SECRET,
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
     },
