@@ -82,6 +82,6 @@ export default defineEventHandler(async event => {
   catch (error) {
     console.error('Google OAuth error:', error)
 
-    return sendRedirect(event, '/login?error=oauth_failed')
+    return sendRedirect(event, '/auth/callback', 302)
   }
 })
