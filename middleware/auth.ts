@@ -1,11 +1,13 @@
 export default defineNuxtRouteMiddleware(async to => {
+  if (to.path === '/login')
+    return
+  if (import.meta.server)
+    return
+
   const authStore = useAuthStore()
 
-  // Si no hay usuario en el store, intenta recuperarlo del token
-  if (!authStore.isLoggedIn)
-    await authStore.fetchMe()
+  await authStore.fetchMe()
 
-  // Si sigue sin estar logueado, redirige al login
   if (!authStore.isLoggedIn)
     return navigateTo('/login')
 })

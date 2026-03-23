@@ -45,6 +45,7 @@ export default defineNuxtConfig({
     '@/plugins/iconify/index.ts',
     '@/plugins/toast.ts',
     '@/plugins/sweetalert2.ts',
+    '@/plugins/auth.ts',
   ],
 
   imports: {
@@ -155,11 +156,20 @@ export default defineNuxtConfig({
     mongoPort: process.env.MONGO_PORT,
     mongoDataBase: process.env.MONGO_DATA_BASE,
     jwtSecret: process.env.JWT_SECRET,
+    googleClientId: process.env.GOOGLE_CLIENT_ID,
+    googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
     public: {
+      appUrl: process.env.APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
     },
   },
 
   compatibilityDate: '2025-07-15',
   modules: ['@vueuse/nuxt', '@nuxtjs/i18n', '@nuxtjs/device', '@pinia/nuxt'],
+
+  i18n: {
+    bundle: {
+      optimizeTranslationDirective: false,
+    },
+  },
 })

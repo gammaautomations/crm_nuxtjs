@@ -27,6 +27,15 @@ const authThemeImg = useGenerateImageVariant(
   true)
 
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
+
+const authStore = useAuthStore()
+
+// Si ya está logueado redirigir al dashboard
+onMounted(async () => {
+  await authStore.fetchMe()
+  if (authStore.isLoggedIn)
+    await navigateTo('/')
+})
 </script>
 
 <template>

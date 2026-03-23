@@ -3,29 +3,51 @@ import { useTheme } from 'vuetify'
 
 const { global } = useTheme()
 
+const loginWithGoogle = () => {
+  window.location.href = '/api/auth/google'
+}
+
 const authProviders = [
+  {
+    icon: 'tabler-brand-google-filled',
+    color: '#dd4b39',
+    colorInDark: '#db4437',
+    action: loginWithGoogle,
+  },
   {
     icon: 'tabler-brand-facebook-filled',
     color: '#4267b2',
     colorInDark: '#497CE2',
   },
-  {
-    icon: 'tabler-brand-twitter-filled',
-    color: '#1da1f2',
-    colorInDark: '#1da1f2',
-  },
-  {
-    icon: 'tabler-brand-github-filled',
-    color: '#272727',
-    colorInDark: '#fff',
-  },
-  {
-    icon: 'tabler-brand-google-filled',
-    color: '#dd4b39',
-    colorInDark: '#db4437',
-  },
 ]
 </script>
+
+<!--
+  <script setup lang="ts">
+  import { useTheme } from 'vuetify'
+
+  const { global } = useTheme()
+
+  const authProviders = [
+
+  {
+  icon: 'tabler-brand-twitter-filled',
+  color: '#1da1f2',
+  colorInDark: '#1da1f2',
+  },
+  {
+  icon: 'tabler-brand-github-filled',
+  color: '#272727',
+  colorInDark: '#fff',
+  },
+  {
+  icon: 'tabler-brand-google-filled',
+  color: '#dd4b39',
+  colorInDark: '#db4437',
+  },
+  ]
+  </script>
+-->
 
 <template>
   <div class="d-flex justify-center flex-wrap gap-1">
@@ -36,6 +58,7 @@ const authProviders = [
       variant="text"
       size="small"
       :color="global.name.value === 'dark' ? link.colorInDark : link.color"
+      @click="link.action"
     >
       <VIcon
         size="20"

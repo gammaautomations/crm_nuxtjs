@@ -2,12 +2,14 @@
 definePageMeta({
   middleware: 'auth',
 })
+
+const authStore = useAuthStore()
 </script>
 
 <template>
-  <div>
+  <div v-if="!authStore.isLoading">
     <VCard title="Dashboard">
-      <VCardText>Bienvenido a tu SaaS</VCardText>
+      <VCardText>Bienvenido {{ authStore.user?.username }}</VCardText>
     </VCard>
   </div>
 </template>
