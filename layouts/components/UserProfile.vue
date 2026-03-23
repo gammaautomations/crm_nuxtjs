@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import avatar1 from '@images/avatars/avatar-1.png'
+
+const authStore = useAuthStore()
+
+const handleLogout = async () => {
+  await authStore.logout()
+}
 </script>
 
 <template>
@@ -48,9 +54,9 @@ import avatar1 from '@images/avatars/avatar-1.png'
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              John Doe
+              {{ authStore.user?.username }}
             </VListItemTitle>
-            <VListItemSubtitle>Admin</VListItemSubtitle>
+            <VListItemSubtitle>{{ authStore.user?.role }}</VListItemSubtitle>
           </VListItem>
 
           <VDivider class="my-2" />
@@ -111,7 +117,10 @@ import avatar1 from '@images/avatars/avatar-1.png'
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/login">
+          <VListItem
+            link
+            @click="handleLogout"
+          >
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -119,10 +128,9 @@ import avatar1 from '@images/avatars/avatar-1.png'
                 size="22"
               />
             </template>
-
-            <VListItemTitle>Logout</VListItemTitle>
+            <VListItemTitle>Cerrar sesión</VListItemTitle>
           </VListItem>
-        </VList>
+        </vlist>
       </VMenu>
       <!-- !SECTION -->
     </VAvatar>

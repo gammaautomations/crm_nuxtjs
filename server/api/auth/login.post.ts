@@ -14,9 +14,7 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 400, message: 'Email y password son requeridos' })
 
   // Buscar usuario por email o username
-  const user = await User.findOne({
-    $or: [{ email }, { username: email }],
-  })
+  const user = await User.findOne({ email }).select('+password')
 
   if (!user)
     throw createError({ statusCode: 401, message: 'Credenciales incorrectas' })

@@ -1,52 +1,49 @@
 <script setup lang="ts">
+import { VForm } from 'vuetify/components/VForm'
+
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
-import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
-import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
-import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
-import authV2MaskDark from '@images/pages/misc-mask-dark.png'
-import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
 
-definePageMeta({
-  layout: 'blank',
-  public: true,
-})
+import authV2RegisterIllustrationBorderedDark from '@images/pages/auth-v2-register-illustration-bordered-dark.png'
+import authV2RegisterIllustrationBorderedLight from '@images/pages/auth-v2-register-illustration-bordered-light.png'
+import authV2RegisterIllustrationDark from '@images/pages/auth-v2-register-illustration-dark.png'
+import authV2RegisterIllustrationLight from '@images/pages/auth-v2-register-illustration-light.png'
+import authV2MaskDark from '@images/pages/misc-mask-dark.png'
+import authV2MaskLight from '@images/pages/misc-mask-light.png'
 
-const { form, loading, errorMsg, v$, login } = useAuth()
-
-const isPasswordVisible = ref(false)
-
-const authThemeImg = useGenerateImageVariant(
-  authV2LoginIllustrationLight,
-  authV2LoginIllustrationDark,
-  authV2LoginIllustrationBorderedLight,
-  authV2LoginIllustrationBorderedDark,
-  true)
+const imageVariant = useGenerateImageVariant(authV2RegisterIllustrationLight,
+  authV2RegisterIllustrationDark,
+  authV2RegisterIllustrationBorderedLight,
+  authV2RegisterIllustrationBorderedDark, true)
 
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
-const authStore = useAuthStore()
+definePageMeta({
+  layout: 'blank',
+  unauthenticatedOnly: true,
 
-// Si ya está logueado redirigir al dashboard
-onMounted(async () => {
-  await authStore.fetchMe()
-  if (authStore.isLoggedIn)
-    await navigateTo('/')
 })
+
+const form = ref({
+  username: '',
+  email: '',
+  password: '',
+  privacyPolicies: false,
+})
+
+const isPasswordVisible = ref(false)
 </script>
 
 <template>
-  <a href="javascript:void(0)">
+  <NuxtLink to="/">
     <div class="auth-logo d-flex align-center gap-x-3">
       <VNodeRenderer :nodes="themeConfig.app.logo" />
       <h1 class="auth-title">
         {{ themeConfig.app.title }}
       </h1>
     </div>
-  </a>
+  </NuxtLink>
 
   <VRow
     no-gutters
@@ -59,17 +56,17 @@ onMounted(async () => {
       <div class="position-relative bg-background w-100 me-0">
         <div
           class="d-flex align-center justify-center w-100 h-100"
-          style="padding-inline: 6.25rem;"
+          style="padding-inline: 100px;"
         >
           <VImg
-            max-width="613"
-            :src="authThemeImg"
+            max-width="500"
+            :src="imageVariant"
             class="auth-illustration mt-16 mb-2"
           />
         </div>
 
         <img
-          class="auth-footer-mask flip-in-rtl"
+          class="auth-footer-mask"
           :src="authThemeMask"
           alt="auth-footer-mask"
           height="280"
@@ -82,33 +79,44 @@ onMounted(async () => {
       cols="12"
       md="4"
       class="auth-card-v2 d-flex align-center justify-center"
+      style="background-color: rgb(var(--v-theme-surface));"
     >
       <VCard
         flat
         :max-width="500"
-        class="mt-12 mt-sm-0 pa-6"
+        class="mt-12 mt-sm-0 pa-4"
       >
         <VCardText>
           <h4 class="text-h4 mb-1">
-            ¡Bienvenido a <span class="text-capitalize">{{ themeConfig.app.title }}</span>! 👋🏻
+            Registro de un nuevo usuario
           </h4>
           <p class="mb-0">
-            Inicie sesión para ingresar en la plataforma
+            Crear nueva cuenta en -----
           </p>
         </VCardText>
+
         <VCardText>
-          <VForm @submit.prevent="login">
+          <VForm @submit.prevent="() => {}">
             <VRow>
+              <!-- Username -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="form.username"
+                  :rules="[requiredValidator]"
+                  autofocus
+                  label="Username"
+                  placeholder="Johndoe"
+                />
+              </VCol>
+
               <!-- email -->
               <VCol cols="12">
                 <AppTextField
                   v-model="form.email"
-                  autofocus
-                  label="Correo electrónico"
+                  :rules="[requiredValidator, emailValidator]"
+                  label="Email"
                   type="email"
-                  placeholder="Introduzca un correo electrónico válido"
-                  :error-messages="v$.email.$errors.map(e => e.$message as string)"
-                  @blur="v$.email.$touch"
+                  placeholder="johndoe@email.com"
                 />
               </VCol>
 
@@ -116,61 +124,52 @@ onMounted(async () => {
               <VCol cols="12">
                 <AppTextField
                   v-model="form.password"
-                  label="Contraseña"
+                  :rules="[requiredValidator]"
+                  label="Password"
                   placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   autocomplete="password"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
-                  :error-messages="v$.password.$errors.map(e => e.$message as string)"
-                  @blur="v$.password.$touch"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
-                <div class="d-flex align-center flex-wrap justify-space-between my-6">
+                <div class="d-flex align-center my-6">
                   <VCheckbox
-                    v-model="form.remember"
-                    label="Recordarme"
+                    id="privacy-policy"
+                    v-model="form.privacyPolicies"
+                    inline
                   />
-                  <a
-                    class="text-primary"
-                    href="javascript:void(0)"
+                  <VLabel
+                    for="privacy-policy"
+                    style="opacity: 1;"
                   >
-                    ¿Olvidó la contraseña?
-                  </a>
+                    <span class="me-1 text-high-emphasis">I agree to</span>
+                    <a
+                      href="javascript:void(0)"
+                      class="text-primary"
+                    >privacy policy & terms</a>
+                  </VLabel>
                 </div>
-
-                <!-- Error general -->
-                <VAlert
-                  v-if="errorMsg"
-                  type="error"
-                  class="mb-4"
-                  density="compact"
-                >
-                  {{ errorMsg }}
-                </VAlert>
 
                 <VBtn
                   block
                   type="submit"
-                  :loading="loading"
                 >
-                  Iniciar sesión
+                  Sign up
                 </VBtn>
               </VCol>
 
               <!-- create account -->
               <VCol
                 cols="12"
-                class="text-body-1 text-center"
+                class="text-center text-base"
               >
-                <span class="d-inline-block">
-                  ¿Nuevo en la plataforma?
-                </span>
+                <span class="d-inline-block">Already have an account?</span>
                 <NuxtLink
-                  class="text-primary ms-1"
-                  :to="{ name: 'register' }"
+                  class="text-primary ms-1 d-inline-block"
+                  :to="{ name: 'login' }"
                 >
-                  Crear una cuenta
+                  Sign in instead
                 </NuxtLink>
               </VCol>
 
@@ -179,7 +178,7 @@ onMounted(async () => {
                 class="d-flex align-center"
               >
                 <VDivider />
-                <span class="mx-4">o</span>
+                <span class="mx-4">or</span>
                 <VDivider />
               </VCol>
 
