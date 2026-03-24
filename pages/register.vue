@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { VForm } from 'vuetify/components/VForm'
-
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
@@ -12,27 +10,24 @@ import authV2RegisterIllustrationLight from '@images/pages/auth-v2-register-illu
 import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 
-const imageVariant = useGenerateImageVariant(authV2RegisterIllustrationLight,
-  authV2RegisterIllustrationDark,
-  authV2RegisterIllustrationBorderedLight,
-  authV2RegisterIllustrationBorderedDark, true)
-
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
-
 definePageMeta({
   layout: 'blank',
-  unauthenticatedOnly: true,
-
 })
 
-const form = ref({
-  username: '',
-  email: '',
-  password: '',
-  privacyPolicies: false,
-})
+const { form, loading, errorMsg, successMsg, v$, register } = useRegister()
 
 const isPasswordVisible = ref(false)
+const isConfirmPasswordVisible = ref(false)
+
+const imageVariant = useGenerateImageVariant(
+  authV2RegisterIllustrationLight,
+  authV2RegisterIllustrationDark,
+  authV2RegisterIllustrationBorderedLight,
+  authV2RegisterIllustrationBorderedDark,
+  true,
+)
+
+const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 </script>
 
 <template>
@@ -96,80 +91,102 @@ const isPasswordVisible = ref(false)
         </VCardText>
 
         <VCardText>
-          <VForm @submit.prevent="() => {}">
+          <VForm @submit.prevent="register">
             <VRow>
               <!-- Username -->
               <VCol cols="12">
                 <AppTextField
                   v-model="form.username"
-                  :rules="[requiredValidator]"
                   autofocus
-                  label="Username"
+                  label="Nombre de usuario o empresa"
                   placeholder="Johndoe"
+                  :error-messages="v$.username.$errors.map(e => e.$message as string)"
+                  @blur="v$.username.$touch"
                 />
               </VCol>
 
-              <!-- email -->
+              <!-- Email -->
               <VCol cols="12">
                 <AppTextField
                   v-model="form.email"
-                  :rules="[requiredValidator, emailValidator]"
                   label="Email"
                   type="email"
                   placeholder="johndoe@email.com"
+                  :error-messages="v$.email.$errors.map(e => e.$message as string)"
+                  @blur="v$.email.$touch"
                 />
               </VCol>
 
-              <!-- password -->
+              <!-- Password -->
               <VCol cols="12">
                 <AppTextField
                   v-model="form.password"
-                  :rules="[requiredValidator]"
-                  label="Password"
+                  label="Contraseña"
                   placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
-                  autocomplete="password"
+                  autocomplete="new-password"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :error-messages="v$.password.$errors.map(e => e.$message as string)"
+                  @blur="v$.password.$touch"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
+              </VCol>
 
-                <div class="d-flex align-center my-6">
-                  <VCheckbox
-                    id="privacy-policy"
-                    v-model="form.privacyPolicies"
-                    inline
-                  />
-                  <VLabel
-                    for="privacy-policy"
-                    style="opacity: 1;"
-                  >
-                    <span class="me-1 text-high-emphasis">I agree to</span>
-                    <a
-                      href="javascript:void(0)"
-                      class="text-primary"
-                    >privacy policy & terms</a>
-                  </VLabel>
-                </div>
+              <!-- Confirm Password -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="form.confirmPassword"
+                  label="Confirmar contraseña"
+                  placeholder="············"
+                  :type="isConfirmPasswordVisible ? 'text' : 'password'"
+                  autocomplete="new-password"
+                  :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :error-messages="v$.confirmPassword.$errors.map(e => e.$message as string)"
+                  @blur="v$.confirmPassword.$touch"
+                  @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+                />
+              </VCol>
+
+              <!-- Alerts -->
+              <VCol cols="12">
+                <VAlert
+                  v-if="errorMsg"
+                  type="error"
+                  density="compact"
+                  class="mb-2"
+                >
+                  {{ errorMsg }}
+                </VAlert>
+
+                <VAlert
+                  v-if="successMsg"
+                  type="success"
+                  density="compact"
+                  class="mb-2"
+                >
+                  {{ successMsg }}
+                </VAlert>
 
                 <VBtn
                   block
                   type="submit"
+                  :loading="loading"
                 >
-                  Sign up
+                  Registrarse
                 </VBtn>
               </VCol>
 
-              <!-- create account -->
+              <!-- Login link -->
               <VCol
                 cols="12"
                 class="text-center text-base"
               >
-                <span class="d-inline-block">Already have an account?</span>
+                <span class="d-inline-block">¿Ya tienes cuenta?</span>
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block"
                   :to="{ name: 'login' }"
                 >
-                  Sign in instead
+                  Iniciar sesión
                 </NuxtLink>
               </VCol>
 
@@ -178,11 +195,10 @@ const isPasswordVisible = ref(false)
                 class="d-flex align-center"
               >
                 <VDivider />
-                <span class="mx-4">or</span>
+                <span class="mx-4">o</span>
                 <VDivider />
               </VCol>
 
-              <!-- auth providers -->
               <VCol
                 cols="12"
                 class="text-center"

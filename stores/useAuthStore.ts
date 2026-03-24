@@ -1,15 +1,9 @@
 import { defineStore } from 'pinia'
 
-interface User {
-  id: string
-  username: string
-  email: string
-  role: string
-  avatar: string
-}
+import type { AuthResponse, AuthUser } from '~/types/auth.types'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User | null>(null)
+  const user = ref<AuthUser | null>(null)
   const isLoggedIn = computed(() => !!user.value)
   const isLoading = ref(true)
   let fetchMePromise: Promise<void> | null = null
@@ -39,15 +33,15 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const login = async (email: string, password: string) => {
-    const data = await $fetch('/api/auth/login', {
+    const data = await $fetch<AuthResponse>('/api/auth/login', {
       method: 'POST',
       body: { email, password },
     })
 
-    user.value = (data as any).user
+    user.value = data.user
     isLoading.value = false
 
-    return (data as any).user
+    return data.user
   }
 
   const logout = async () => {
