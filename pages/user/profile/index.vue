@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import UserBioPanel from '@/views/user/view/UserBioPanel.vue'
 import UserEditProfile from '@/views/user/view/UserEditProfile.vue'
+import UserSecurityPanel from '@/views/user/view/UserSecurityPanel.vue'
 
 const tabs = [
   {
@@ -21,7 +22,7 @@ const tabs = [
 ]
 
 const userTab = ref(0)
-</script>>
+</script>
 
 <template>
   <VRow>
@@ -65,7 +66,9 @@ const userTab = ref(0)
           <UserEditProfile />
         </VWindowItem>
 
-        <VWindowItem :value="1" />
+        <VWindowItem :value="1">
+          <UserSecurityPanel />
+        </VWindowItem>
 
         <VWindowItem :value="2">
           <VCard>

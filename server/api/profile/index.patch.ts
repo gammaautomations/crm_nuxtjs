@@ -1,6 +1,7 @@
 // index.patch.ts
 
 import jwt from 'jsonwebtoken'
+import { validateUpdateProfileDto } from '~/server/dtos/profile.dto'
 import { Profile } from '~/server/models/Profile'
 import { connectDB } from '~/server/utils/db'
 
@@ -15,7 +16,8 @@ export default defineEventHandler(async event => {
   const decoded = jwt.verify(token, config.jwtSecret) as { id: string }
 
   const body = await readBody(event)
-  const { fullname, phone, phone1, whatsapp } = body
+  const dto = validateUpdateProfileDto(body)
+  const { fullname, phone, phone1, whatsapp } = dto
 
   const profile = await Profile.findOneAndUpdate(
     { userId: decoded.id },
