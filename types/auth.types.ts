@@ -17,6 +17,7 @@ export interface AuthUser {
   email: string
   role: string
   avatar: string
+  emailVerified: boolean
 }
 
 export interface AuthResponse {

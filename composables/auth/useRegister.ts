@@ -38,7 +38,7 @@ export const useRegister = () => {
       successMsg.value = 'Usuario registrado correctamente'
 
       setTimeout(() => {
-        router.push('/login')
+        router.push(`/auth/verify-email?email=${encodeURIComponent(form.value.email)}`)
       }, 1500)
     })
   }

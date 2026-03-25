@@ -160,6 +160,11 @@ export default defineNuxtConfig({
     googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
     facebookAppId: process.env.FACEBOOK_APP_ID,
     facebookAppSecret: process.env.FACEBOOK_APP_SECRET,
+    mailHost: process.env.MAIL_HOST,
+    mailPort: process.env.MAIL_PORT,
+    mailUser: process.env.MAIL_USER,
+    mailPass: process.env.MAIL_PASS,
+    mailFrom: process.env.MAIL_FROM,
     public: {
       appUrl: process.env.APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',

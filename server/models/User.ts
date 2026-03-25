@@ -68,6 +68,16 @@ const UserSchema = new mongoose.Schema(
     lastLogin: {
       type: Date,
     },
+
+    verificationCode: {
+      type: String,
+      select: false,
+    },
+
+    verificationCodeExpires: {
+      type: Date,
+      select: false,
+    },
   },
   {
     timestamps: true,

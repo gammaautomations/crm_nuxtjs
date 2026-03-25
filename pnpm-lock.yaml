@@ -85,6 +85,9 @@ importers:
       express-validator:
         specifier: ^7.3.1
         version: 7.3.1
+      formidable:
+        specifier: ^3.5.4
+        version: 3.5.4
       google-auth-library:
         specifier: ^10.6.2
         version: 10.6.2
@@ -102,7 +105,10 @@ importers:
         version: 9.3.0
       next-auth:
         specifier: 4.21.1
-        version: 4.21.1(next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 4.21.1(next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0))(nodemailer@8.0.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      nodemailer:
+        specifier: ^8.0.3
+        version: 8.0.3
       nuxt:
         specifier: 4.2.0
         version: 4.2.0(@parcel/watcher@2.5.1)(@types/node@24.9.2)(@vue/compiler-sfc@3.5.22)(db0@0.3.4)(eslint@8.57.1)(ioredis@5.8.2)(magicast@0.3.5)(meow@13.2.0)(optionator@0.9.4)(rollup@4.52.5)(sass@1.76.0)(stylelint@16.8.0(typescript@5.9.3))(terser@5.44.0)(tsx@4.20.6)(typescript@5.9.3)(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(sass@1.76.0)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(yaml@2.8.1)
@@ -208,7 +214,7 @@ importers:
         version: 0.11.2(magicast@0.3.5)(pinia@3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))
       '@sidebase/nuxt-auth':
         specifier: 1.1.0
-        version: 1.1.0(magicast@0.3.5)(next-auth@4.21.1(next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 1.1.0(magicast@0.3.5)(next-auth@4.21.1(next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0))(nodemailer@8.0.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@stylistic/stylelint-config':
         specifier: 1.0.1
         version: 1.0.1(stylelint@16.8.0(typescript@5.9.3))
@@ -233,6 +239,9 @@ importers:
       '@types/bcrypt':
         specifier: ^6.0.0
         version: 6.0.0
+      '@types/formidable':
+        specifier: ^3.5.0
+        version: 3.5.0
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
@@ -245,6 +254,9 @@ importers:
       '@types/node':
         specifier: 24.9.2
         version: 24.9.2
+      '@types/nodemailer':
+        specifier: ^7.0.11
+        version: 7.0.11
       '@types/webfontloader':
         specifier: 1.6.38
         version: 1.6.38
@@ -1043,6 +1055,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@noble/hashes@1.8.0':
+    resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
+    engines: {node: ^14.21.3 || >=16}
+
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -1488,6 +1504,9 @@ packages:
 
   '@panva/hkdf@1.2.1':
     resolution: {integrity: sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==}
+
+  '@paralleldrive/cuid2@2.3.1':
+    resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
 
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
@@ -2068,6 +2087,9 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
+  '@types/formidable@3.5.0':
+    resolution: {integrity: sha512-fHChKoKkxUy/n7uCHHWTMQ8yA7/raxz1+K2B7edHTIQhwBHX9TfRnCX0ohmuR77ezEFgMapUuSksk0MA7nQCrA==}
+
   '@types/geojson@7946.0.16':
     resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
@@ -2116,6 +2138,9 @@ packages:
 
   '@types/node@24.9.2':
     resolution: {integrity: sha512-uWN8YqxXxqFMX2RqGOrumsKeti4LlmIMIyV0lgut4jx7KQBcBiW6vkDtIBvHnHIquwNfJhk8v2OtmO8zXWHfPA==}
+
+  '@types/nodemailer@7.0.11':
+    resolution: {integrity: sha512-E+U4RzR2dKrx+u3N4DlsmLaDC6mMZOM/TPROxA0UAPiTgI0y4CEFBmZE+coGWTjakDriRsXG368lNk1u9Q0a2g==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -2725,6 +2750,9 @@ packages:
     resolution: {integrity: sha512-BNoCY6SXXPQ7gF2opIP4GBE+Xw7U+pHMYKuzjgCN3GwiaIR09UUeKfheyIry77QtrCBlC0KK0q5/TER/tYh3PQ==}
     engines: {node: '>= 0.4'}
 
+  asap@2.0.6:
+    resolution: {integrity: sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==}
+
   ast-kit@1.4.3:
     resolution: {integrity: sha512-MdJqjpodkS5J149zN0Po+HPshkTdUyrvF7CKTafUgv69vBSPtncrj+3IiUgqdd7ElIEkbeXCsEouBUwLrw9Ilg==}
     engines: {node: '>=16.14.0'}
@@ -3297,6 +3325,9 @@ packages:
 
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
+
+  dezalgo@1.0.4:
+    resolution: {integrity: sha512-rXSP0bf+5n0Qonsb+SVVfNfIsimO4HEtmnIpPHY8Q1UCzKlQrDMfdobr8nJOOsRgWCyMRqeSBQzmWUMq7zvVig==}
 
   diff-sequences@27.5.1:
     resolution: {integrity: sha512-k1gCAXAsNgLwEL+Y8Wvl+M6oEFj5bgazfZULpS5CneoPPXRaCCW7dm+q21Ky2VEE5X+VeRDBVg1Pcvvsr4TtNQ==}
@@ -3877,6 +3908,10 @@ packages:
   formdata-polyfill@4.0.10:
     resolution: {integrity: sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==}
     engines: {node: '>=12.20.0'}
+
+  formidable@3.5.4:
+    resolution: {integrity: sha512-YikH+7CUTOtP44ZTnUhR7Ic2UASBPOqmaRkRKxRbywPTe5VxF7RRCck4af9wutiZ/QKM5nME9Bie2fFaPz5Gug==}
+    engines: {node: '>=14.0.0'}
 
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
@@ -4964,6 +4999,10 @@ packages:
 
   node-releases@2.0.27:
     resolution: {integrity: sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA==}
+
+  nodemailer@8.0.3:
+    resolution: {integrity: sha512-JQNBqvK+bj3NMhUFR3wmCl3SYcOeMotDiwDBvIoCuQdF0PvlIY0BH+FJ2CG7u4cXKPChplE78oowlH/Otsc4ZQ==}
+    engines: {node: '>=6.0.0'}
 
   nopt@8.1.0:
     resolution: {integrity: sha512-ieGu42u/Qsa4TFktmaKEwM6MQH0pOWnaB3htzh0JRtx84+Mebc0cbZYN5bC+6WTZ4+77xrL9Pn5m7CV6VIkV7A==}
@@ -7791,6 +7830,8 @@ snapshots:
   '@next/swc-win32-x64-msvc@13.5.9':
     optional: true
 
+  '@noble/hashes@1.8.0': {}
+
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -8332,6 +8373,10 @@ snapshots:
 
   '@panva/hkdf@1.2.1': {}
 
+  '@paralleldrive/cuid2@2.3.1':
+    dependencies:
+      '@noble/hashes': 1.8.0
+
   '@parcel/watcher-android-arm64@2.5.1':
     optional: true
 
@@ -8609,13 +8654,13 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@sidebase/nuxt-auth@1.1.0(magicast@0.3.5)(next-auth@4.21.1(next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sidebase/nuxt-auth@1.1.0(magicast@0.3.5)(next-auth@4.21.1(next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0))(nodemailer@8.0.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@nuxt/kit': 3.20.0(magicast@0.3.5)
       defu: 6.1.4
       h3: 1.15.4
       knitwork: 1.2.0
-      next-auth: 4.21.1(next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next-auth: 4.21.1(next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0))(nodemailer@8.0.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       nitropack: 2.12.9
       requrl: 3.0.2
       scule: 1.3.0
@@ -8902,6 +8947,10 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
+  '@types/formidable@3.5.0':
+    dependencies:
+      '@types/node': 24.9.2
+
   '@types/geojson@7946.0.16': {}
 
   '@types/hast@3.0.4':
@@ -8963,6 +9012,10 @@ snapshots:
   '@types/node@24.9.2':
     dependencies:
       undici-types: 7.16.0
+
+  '@types/nodemailer@7.0.11':
+    dependencies:
+      '@types/node': 24.9.2
 
   '@types/normalize-package-data@2.4.4': {}
 
@@ -9734,6 +9787,8 @@ snapshots:
       get-intrinsic: 1.3.0
       is-array-buffer: 3.0.5
 
+  asap@2.0.6: {}
+
   ast-kit@1.4.3:
     dependencies:
       '@babel/parser': 7.28.5
@@ -10286,6 +10341,11 @@ snapshots:
   devlop@1.1.0:
     dependencies:
       dequal: 2.0.3
+
+  dezalgo@1.0.4:
+    dependencies:
+      asap: 2.0.6
+      wrappy: 1.0.2
 
   diff-sequences@27.5.1: {}
 
@@ -11087,6 +11147,12 @@ snapshots:
   formdata-polyfill@4.0.10:
     dependencies:
       fetch-blob: 3.2.0
+
+  formidable@3.5.4:
+    dependencies:
+      '@paralleldrive/cuid2': 2.3.1
+      dezalgo: 1.0.4
+      once: 1.4.0
 
   fraction.js@4.3.7: {}
 
@@ -12130,7 +12196,7 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  next-auth@4.21.1(next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next-auth@4.21.1(next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0))(nodemailer@8.0.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.28.4
       '@panva/hkdf': 1.2.1
@@ -12144,6 +12210,8 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       uuid: 8.3.2
+    optionalDependencies:
+      nodemailer: 8.0.3
 
   next@13.5.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.76.0):
     dependencies:
@@ -12298,6 +12366,8 @@ snapshots:
   node-mock-http@1.0.3: {}
 
   node-releases@2.0.27: {}
+
+  nodemailer@8.0.3: {}
 
   nopt@8.1.0:
     dependencies:
