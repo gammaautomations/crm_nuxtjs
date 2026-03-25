@@ -62,7 +62,10 @@ const handleLogout = async () => {
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem link>
+          <VListItem
+            link
+            to="/user/profile"
+          >
             <template #prepend>
               <VIcon
                 class="me-2"

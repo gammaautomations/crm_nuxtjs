@@ -54,6 +54,7 @@ export default defineNuxtConfig({
       './@core/composable/',
       './plugins/*/composables/*',
       './composables/auth',
+      './composables/profile',
     ],
   },
 
