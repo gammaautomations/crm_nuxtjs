@@ -17,6 +17,6 @@ export default defineNuxtRouteMiddleware(async to => {
     return navigateTo('/login')
 
   // Autenticado pero email no verificado → verificación
-  if (!authStore.user?.emailVerified && to.path !== '/auth/verify-email')
+  if (authStore.user?.emailVerified === false && to.path !== '/auth/verify-email')
     return navigateTo(`/auth/verify-email?email=${encodeURIComponent(authStore.user?.email || '')}`)
 })
