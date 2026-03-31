@@ -2,7 +2,7 @@
 
 import Swal from 'sweetalert2'
 
-const useSweetAlert = () => {
+export const useSweetAlert = () => {
   const swalConfirmation = async (data: any) => {
     return new Promise(resolve => {
       Swal.fire({
@@ -24,5 +24,3 @@ const useSweetAlert = () => {
     swalConfirmation,
   }
 }
-
-export default useSweetAlert

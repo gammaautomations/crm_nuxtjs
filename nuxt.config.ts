@@ -56,6 +56,8 @@ export default defineNuxtConfig({
       './composables/auth',
       './composables/profile',
       './composables/settings',
+      './composables/contacts',
+      './composables/utils',
     ],
   },
 
@@ -109,6 +111,10 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    server: {
+      allowedHosts: ['chronologically-gimlety-blanch.ngrok-free.dev'],
+    },
+
     define: { 'process.env': {} },
 
     resolve: {
