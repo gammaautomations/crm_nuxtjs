@@ -82,6 +82,39 @@ const deleteContact = async (contact: any) => {
     console.error('Error eliminando contacto:', error)
   }
 }
+
+// 👇 Fuera de deleteContact
+const importLoading = ref(false)
+
+const importFromGmail = async () => {
+  const authStore = useAuthStore()
+
+  const confirmed = await swalConfirmation({
+    title: '¿Importar contactos de Gmail?',
+    text: 'Se importarán todos tus contactos de Gmail. Los existentes se actualizarán.',
+    icon: 'info',
+  })
+
+  if (!confirmed)
+    return
+
+  importLoading.value = true
+
+  try {
+    await $fetch(useRuntimeConfig().public.n8nWebhookUrl, {
+      method: 'POST',
+      body: { userId: authStore.user?.id },
+    })
+
+    await refresh()
+  }
+  catch (error: any) {
+    console.error('Error importando contactos:', error)
+  }
+  finally {
+    importLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -110,6 +143,18 @@ const deleteContact = async (contact: any) => {
           />
         </VBtnToggle>
 
+        <!-- Importar Gmail -->
+        <VBtn
+          color="secondary"
+          variant="outlined"
+          prepend-icon="tabler-brand-google"
+          :loading="importLoading"
+          @click="importFromGmail"
+        >
+          Importar Gmail
+        </VBtn>
+
+        <!-- Nuevo contacto -->
         <VBtn
           color="primary"
           prepend-icon="tabler-plus"

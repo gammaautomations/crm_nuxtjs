@@ -176,6 +176,7 @@ export default defineNuxtConfig({
     public: {
       appUrl: process.env.APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
+      n8nWebhookUrl: process.env.NUXT_PUBLIC_N8N_WEBHOOK_URL,
     },
   },
 

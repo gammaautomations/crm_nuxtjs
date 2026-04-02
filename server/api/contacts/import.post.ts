@@ -1,5 +1,6 @@
 import { Contact } from '~/server/models/Contact'
 import { connectDB } from '~/server/utils/db'
+import { createNotification } from '~/server/utils/notifications'
 
 export default defineEventHandler(async event => {
   await connectDB()
@@ -107,6 +108,17 @@ export default defineEventHandler(async event => {
       results.errors++
       results.details.push({ error: error.message, contact })
     }
+  }
+
+  if (results.created > 0 || results.updated > 0) {
+    await createNotification({
+      userId: contacts[0]?.userId || '',
+      title: 'Importación completada',
+      message: `${results.created} contactos creados, ${results.updated} actualizados.`,
+      type: 'success',
+      category: 'import',
+      link: '/contacts',
+    })
   }
 
   return {
