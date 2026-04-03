@@ -5,12 +5,12 @@ import svgLoader from 'vite-svg-loader'
 export default defineNuxtConfig({
   app: {
     head: {
-      titleTemplate: '%s - NuxtJS Admin Template',
-      title: 'Vuexy',
+      titleTemplate: '%s - CRM',
+      title: 'CRM',
       link: [{
         rel: 'icon',
         type: 'image/x-icon',
-        href: `${process.env.NUXT_APP_BASE_URL}/favicon.ico`,
+        href: '/favicon.ico', // 👈 ruta relativa, sin variable
       }],
     },
   },
