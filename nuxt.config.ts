@@ -2,13 +2,11 @@ import { fileURLToPath } from 'node:url'
 import vuetify from 'vite-plugin-vuetify'
 import svgLoader from 'vite-svg-loader'
 
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
     head: {
       titleTemplate: '%s - NuxtJS Admin Template',
       title: 'Vuexy',
-
       link: [{
         rel: 'icon',
         type: 'image/x-icon',
@@ -18,7 +16,7 @@ export default defineNuxtConfig({
   },
 
   devtools: {
-    enabled: true,
+    enabled: process.env.NODE_ENV !== 'production',
   },
 
   css: [
@@ -87,7 +85,6 @@ export default defineNuxtConfig({
     },
   },
 
-  // ℹ️ Disable source maps until this is resolved: https://github.com/vuetifyjs/vuetify-loader/issues/290
   sourcemap: {
     server: false,
     client: false,
@@ -104,6 +101,7 @@ export default defineNuxtConfig({
     '@db': fileURLToPath(new URL('./server/fake-db/', import.meta.url)),
     '@api-utils': fileURLToPath(new URL('./server/utils/', import.meta.url)),
   },
+
   vue: {
     compilerOptions: {
       isCustomElement: tag => tag === 'swiper-container' || tag === 'swiper-slide',
@@ -112,7 +110,7 @@ export default defineNuxtConfig({
 
   vite: {
     server: {
-      allowedHosts: ['chronologically-gimlety-blanch.ngrok-free.dev'],
+      allowedHosts: ['all'],
     },
 
     define: { 'process.env': {} },
@@ -137,9 +135,7 @@ export default defineNuxtConfig({
 
     optimizeDeps: {
       exclude: ['vuetify'],
-      entries: [
-        './**/*.vue',
-      ],
+      entries: ['./**/*.vue'],
     },
 
     plugins: [
@@ -168,11 +164,11 @@ export default defineNuxtConfig({
     googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
     facebookAppId: process.env.FACEBOOK_APP_ID,
     facebookAppSecret: process.env.FACEBOOK_APP_SECRET,
-    mailHost: process.env.MAIL_HOST,
-    mailPort: process.env.MAIL_PORT,
-    mailUser: process.env.MAIL_USER,
-    mailPass: process.env.MAIL_PASS,
-    mailFrom: process.env.MAIL_FROM,
+    mailHost: process.env.NUXT_MAIL_HOST,
+    mailPort: process.env.NUXT_MAIL_PORT,
+    mailUser: process.env.NUXT_MAIL_USER,
+    mailPass: process.env.NUXT_MAIL_PASS,
+    mailFrom: process.env.NUXT_MAIL_FROM,
     public: {
       appUrl: process.env.APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
@@ -181,11 +177,17 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2025-07-15',
+
   modules: ['@vueuse/nuxt', '@nuxtjs/i18n', '@nuxtjs/device', '@pinia/nuxt'],
 
   i18n: {
     bundle: {
       optimizeTranslationDirective: false,
     },
+  },
+
+  nitro: {
+    preset: 'node-server',
+    trustProxy: true,
   },
 })
