@@ -11,6 +11,9 @@ RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY . .
 
+# Generar iconos antes del build
+RUN pnpm run build:icons
+
 RUN pnpm run build
 
 EXPOSE 3000
