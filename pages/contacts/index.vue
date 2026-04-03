@@ -115,6 +115,10 @@ const importFromGmail = async () => {
     importLoading.value = false
   }
 }
+
+const exportContacts = () => {
+  window.open('/api/contacts/export', '_blank')
+}
 </script>
 
 <template>
@@ -152,6 +156,16 @@ const importFromGmail = async () => {
           @click="importFromGmail"
         >
           Importar Gmail
+        </VBtn>
+
+        <!-- Importar Gmail -->
+        <VBtn
+          color="secondary"
+          variant="outlined"
+          prepend-icon="tabler-file-spreadsheet"
+          @click="exportContacts"
+        >
+          Exportar CSV
         </VBtn>
 
         <!-- Nuevo contacto -->

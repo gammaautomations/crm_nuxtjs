@@ -121,12 +121,20 @@ const handleNotificationClick = async (notification: any) => {
                   <span class="text-caption text-disabled">
                     {{ formatDate(notification.createdAt) }}
                   </span>
-                  <VIcon
-                    v-if="!notification.read"
-                    icon="tabler-circle-filled"
-                    size="8"
-                    color="primary"
-                  />
+                  <div class="d-flex align-center gap-1">
+                    <VIcon
+                      v-if="!notification.read"
+                      icon="tabler-circle-filled"
+                      size="8"
+                      color="primary"
+                    />
+                    <VIcon
+                      icon="tabler-x"
+                      size="16"
+                      class="cursor-pointer text-disabled"
+                      @click.stop="notificationStore.deleteNotification(notification._id)"
+                    />
+                  </div>
                 </div>
               </template>
             </VListItem>

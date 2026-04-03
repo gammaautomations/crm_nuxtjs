@@ -1,13 +1,13 @@
 import { Contact } from '~/server/models/Contact'
+import { User } from '~/server/models/User'
 import { connectDB } from '~/server/utils/db'
+import { sendImportCompletedEmail } from '~/server/utils/mailer'
 import { createNotification } from '~/server/utils/notifications'
 
 export default defineEventHandler(async event => {
   await connectDB()
 
   const body = await readBody(event)
-
-  // n8n puede enviar un array o un solo contacto
   const contacts = Array.isArray(body) ? body : [body]
 
   const results = {
@@ -20,41 +20,13 @@ export default defineEventHandler(async event => {
   for (const contact of contacts) {
     try {
       const {
-        userId,
-        firstName,
-        lastName,
-        fullName,
-        email,
-        email2,
-        phone,
-        phone2,
-        whatsapp,
-        company,
-        jobTitle,
-        website,
-        address,
-        city,
-        state,
-        country,
-        zipCode,
-        linkedin,
-        twitter,
-        facebook,
-        instagram,
-        tags,
-        notes,
-        avatar,
-        externalId,
-        source,
-        contactData,
+        userId, firstName, lastName, fullName, email, email2,
+        phone, phone2, whatsapp, company, jobTitle, website,
+        address, city, state, country, zipCode, linkedin, twitter,
+        facebook, instagram, tags, notes, avatar, externalId, source, contactData,
       } = contact
 
-      // Buscar por externalId o email para evitar duplicados
-      const filter = externalId
-        ? { externalId }
-        : email
-          ? { email }
-          : null
+      const filter = externalId ? { externalId } : email ? { email } : null
 
       if (!filter) {
         results.errors++
@@ -110,15 +82,27 @@ export default defineEventHandler(async event => {
     }
   }
 
-  if (results.created > 0 || results.updated > 0) {
+  // Notificación y email al finalizar
+  const userId = contacts[0]?.userId
+  if (userId && (results.created > 0 || results.updated > 0)) {
     await createNotification({
-      userId: contacts[0]?.userId || '',
+      userId,
       title: 'Importación completada',
       message: `${results.created} contactos creados, ${results.updated} actualizados.`,
       type: 'success',
       category: 'import',
       link: '/contacts',
     })
+
+    const user = await User.findById(userId)
+    if (user) {
+      await sendImportCompletedEmail(
+        user.email,
+        user.username,
+        results.created,
+        results.updated,
+      )
+    }
   }
 
   return {

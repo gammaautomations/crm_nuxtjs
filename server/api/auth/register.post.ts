@@ -3,6 +3,7 @@ import { validateRegisterDto } from '~/server/dtos/auth.dto'
 import { Profile } from '~/server/models/Profile'
 import { User } from '~/server/models/User'
 import { connectDB } from '~/server/utils/db'
+import { sendWelcomeEmail } from '~/server/utils/mailer'
 
 export default defineEventHandler(async event => {
   await connectDB()
@@ -36,6 +37,8 @@ export default defineEventHandler(async event => {
 
   // Crear perfil automáticamente
   await Profile.create({ userId: user._id })
+
+  await sendWelcomeEmail(user.email, user.username)
 
   return {
     message: 'Usuario registrado correctamente',

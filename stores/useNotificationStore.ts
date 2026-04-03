@@ -50,6 +50,12 @@ export const useNotificationStore = defineStore('notifications', () => {
     unreadCount.value = 0
   }
 
+  const deleteNotification = async (id: string) => {
+    await $fetch(`/api/notifications/${id}`, { method: 'DELETE' })
+    notifications.value = notifications.value.filter(n => n._id !== id)
+    unreadCount.value = notifications.value.filter(n => !n.read).length
+  }
+
   return {
     notifications,
     unreadCount,
@@ -57,5 +63,6 @@ export const useNotificationStore = defineStore('notifications', () => {
     fetchNotifications,
     markAsRead,
     markAllAsRead,
+    deleteNotification,
   }
 })
