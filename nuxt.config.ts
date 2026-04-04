@@ -3,6 +3,7 @@ import vuetify from 'vite-plugin-vuetify'
 import svgLoader from 'vite-svg-loader'
 
 export default defineNuxtConfig({
+  ssr: false,
   app: {
     head: {
       titleTemplate: '%s - CRM',
