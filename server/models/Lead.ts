@@ -23,6 +23,9 @@ const LeadSchema = new mongoose.Schema(
     area_detectada: { type: String, trim: true },
     resumen_ejecutivo: { type: String, trim: true },
     accion_recomendada: { type: String, trim: true },
+    tono_email: { type: String, trim: true },
+    motivo_score_bajo: { type: String, trim: true },
+    email_enviado: { type: String, trim: true },
 
     // Metadata
     source: { type: String, default: 'landing' },
