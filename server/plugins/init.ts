@@ -1,5 +1,6 @@
 import { Contact } from '~/server/models/Contact'
 import { GeneralSetting } from '~/server/models/GeneralSetting'
+import { Lead } from '~/server/models/Lead'
 import { Notification } from '~/server/models/Notification'
 import { connectDB } from '~/server/utils/db'
 
@@ -14,6 +15,8 @@ export default defineNitroPlugin(async () => {
     console.log('✅ Contact ok')
     await Notification.init()
     console.log('✅ Notification ok')
+    await Lead.init()
+    console.log('✅ Lead ok')
     console.log('✅ Modelos inicializados')
   }
   catch (error) {
