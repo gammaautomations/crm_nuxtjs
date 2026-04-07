@@ -5,16 +5,23 @@ definePageMeta({
   middleware: ['auth'],
 })
 
+// Fetch data
 const { data: lawyers, refresh } = await useFetch('/api/lawyers')
 const { data: specialtiesData } = await useFetch('/api/specialties')
-const specialties = computed(() => (specialtiesData.value as any[]) || [])
-const { swalConfirmation } = useSweetAlert()
 
+// Computed seguros
+const lawyersList = computed(() => lawyers.value || [])
+const specialtiesList = computed(() => specialtiesData.value || [])
+
+// UI state
 const dialog = ref(false)
 const loading = ref(false)
 const errorMsg = ref('')
 const editingId = ref<string | null>(null)
 
+const { swalConfirmation } = useSweetAlert()
+
+// Form
 const form = ref({
   name: '',
   email: '',
@@ -22,24 +29,33 @@ const form = ref({
   specialties: [] as string[],
 })
 
+// Abrir modal
 const openDialog = (lawyer?: any) => {
   errorMsg.value = ''
+
   if (lawyer) {
     editingId.value = lawyer._id
     form.value = {
       name: lawyer.name,
       email: lawyer.email,
       phone: lawyer.phone || '',
-      specialties: lawyer.specialties.map((s: any) => s._id),
+      specialties: (lawyer.specialties || []).map((s: any) => s._id),
     }
   }
   else {
     editingId.value = null
-    form.value = { name: '', email: '', phone: '', specialties: [] }
+    form.value = {
+      name: '',
+      email: '',
+      phone: '',
+      specialties: [],
+    }
   }
+
   dialog.value = true
 }
 
+// Guardar
 const saveLawyer = async () => {
   loading.value = true
   errorMsg.value = ''
@@ -57,6 +73,7 @@ const saveLawyer = async () => {
         body: form.value,
       })
     }
+
     dialog.value = false
     await refresh()
   }
@@ -68,6 +85,7 @@ const saveLawyer = async () => {
   }
 }
 
+// Eliminar
 const deleteLawyer = async (lawyer: any) => {
   const confirmed = await swalConfirmation({
     title: '¿Eliminar abogado?',
@@ -78,14 +96,11 @@ const deleteLawyer = async (lawyer: any) => {
   if (!confirmed)
     return
 
-  await $fetch(`/api/lawyers/${lawyer._id}`, { method: 'DELETE' })
+  await $fetch(`/api/lawyers/${lawyer._id}`, {
+    method: 'DELETE',
+  })
+
   await refresh()
-}
-
-const specialtyColor = (id: string) => {
-  const s = (specialties.value as any[])?.find((s: any) => s._id === id)
-
-  return s?.color || '#7367F0'
 }
 </script>
 
@@ -259,7 +274,7 @@ const specialtyColor = (id: string) => {
                 <AppSelect
                   v-model="form.specialties"
                   label="Especialidades"
-                  :items="specialties.map((s: any) => ({ title: s.name, value: s._id }))"
+                  :items="(specialtiesList as any[]).map((s: any) => ({ title: s.name, value: s._id }))"
                   multiple
                   chips
                 />
