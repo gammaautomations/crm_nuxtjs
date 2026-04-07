@@ -57,6 +57,24 @@ const openDialog = (lawyer?: any) => {
 
 // Guardar
 const saveLawyer = async () => {
+  if (!form.value.name) {
+    errorMsg.value = 'El nombre es requerido'
+
+    return
+  }
+
+  if (!form.value.email) {
+    errorMsg.value = 'El email es requerido'
+
+    return
+  }
+
+  if (!form.value.specialties.length) {
+    errorMsg.value = 'Selecciona al menos una especialidad'
+
+    return
+  }
+
   loading.value = true
   errorMsg.value = ''
 
@@ -274,6 +292,7 @@ const deleteLawyer = async (lawyer: any) => {
                 <AppSelect
                   v-model="form.specialties"
                   label="Especialidades"
+                  placeholder="Seleccione una especialidad"
                   :items="(specialtiesList as any[]).map((s: any) => ({ title: s.name, value: s._id }))"
                   multiple
                   chips
