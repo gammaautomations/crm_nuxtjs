@@ -1,7 +1,9 @@
 import { Contact } from '~/server/models/Contact'
 import { GeneralSetting } from '~/server/models/GeneralSetting'
+import { Lawyer } from '~/server/models/Lawyer'
 import { Lead } from '~/server/models/Lead'
 import { Notification } from '~/server/models/Notification'
+import { Specialty } from '~/server/models/Specialty'
 import { connectDB } from '~/server/utils/db'
 
 export default defineNitroPlugin(async () => {
@@ -17,6 +19,9 @@ export default defineNitroPlugin(async () => {
     console.log('✅ Notification ok')
     await Lead.init()
     console.log('✅ Lead ok')
+    await Specialty.init()
+    await Lawyer.init()
+    console.log('✅ Specialty y Lawyer ok')
     console.log('✅ Modelos inicializados')
   }
   catch (error) {
