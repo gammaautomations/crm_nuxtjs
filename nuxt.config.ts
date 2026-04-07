@@ -190,5 +190,8 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'node-server',
     trustProxy: true,
+    routeRules: {
+      '/**': { ssr: false },
+    },
   },
 })
