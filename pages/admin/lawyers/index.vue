@@ -258,7 +258,7 @@ const specialtyColor = (id: string) => {
                 <AppSelect
                   v-model="form.specialties"
                   label="Especialidades"
-                  :items="(specialties as any[])?.map((s: any) => ({ title: s.name, value: s._id }))"
+                  :items="((specialties as any[]) || [])?.map((s: any) => ({ title: s.name, value: s._id }))"
                   multiple
                   chips
                 />
