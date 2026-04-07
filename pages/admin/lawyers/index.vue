@@ -6,7 +6,8 @@ definePageMeta({
 })
 
 const { data: lawyers, refresh } = await useFetch('/api/lawyers')
-const { data: specialties } = await useFetch('/api/specialties')
+const { data: specialtiesData } = await useFetch('/api/specialties')
+const specialties = computed(() => (specialtiesData.value as any[]) || [])
 const { swalConfirmation } = useSweetAlert()
 
 const dialog = ref(false)
@@ -258,7 +259,7 @@ const specialtyColor = (id: string) => {
                 <AppSelect
                   v-model="form.specialties"
                   label="Especialidades"
-                  :items="((specialties as any[]) || [])?.map((s: any) => ({ title: s.name, value: s._id }))"
+                  :items="specialties.map((s: any) => ({ title: s.name, value: s._id }))"
                   multiple
                   chips
                 />
