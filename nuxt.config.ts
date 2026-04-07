@@ -191,6 +191,7 @@ export default defineNuxtConfig({
     preset: 'node-server',
     trustProxy: true,
     routeRules: {
+      '/api/**': { ssr: true },
       '/**': { ssr: false },
     },
   },
