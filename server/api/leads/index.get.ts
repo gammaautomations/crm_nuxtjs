@@ -29,7 +29,6 @@ export default defineEventHandler(async event => {
 
   const [leads, total] = await Promise.all([
     Lead.find(filter)
-      .populate('assignedLawyer', 'name email') // 👈 agregar
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
