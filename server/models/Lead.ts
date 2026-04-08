@@ -28,6 +28,11 @@ const LeadSchema = new mongoose.Schema(
     email_enviado: { type: String, trim: true },
 
     // Metadata
+    assignedLawyer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Lawyer',
+      default: null,
+    },
     source: { type: String, default: 'landing' },
     status: {
       type: String,
