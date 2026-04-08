@@ -111,7 +111,7 @@ const formatDate = (date: string) => {
       </VBtn>
     </div>
 
-    <div class="d-flex gap-4 overflow-x-auto pb-4">
+    <div class="d-flex gap-4 pb-4 kanban-board">
       <div
         v-for="column in columns"
         :key="column.title"
@@ -216,5 +216,15 @@ const formatDate = (date: string) => {
 
 .cursor-grab:active {
   cursor: grabbing;
+}
+
+.kanban-board {
+  -ms-overflow-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.kanban-board::-webkit-scrollbar {
+  display: none;
 }
 </style>
