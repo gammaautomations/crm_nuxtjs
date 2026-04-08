@@ -1,7 +1,9 @@
 // server/api/leads/index.post.ts
 
 import { Lead } from '~/server/models/Lead'
+import { User } from '~/server/models/User'
 import { connectDB } from '~/server/utils/db'
+import { createNotification } from '~/server/utils/notifications'
 
 export default defineEventHandler(async event => {
   await connectDB()
@@ -27,6 +29,22 @@ export default defineEventHandler(async event => {
     accion_recomendada: body.accion_recomendada,
     source: 'landing',
   })
+
+  // Notificar a todos los admins
+  const admins = await User.find({ role: 'Admin', status: true }).lean()
+
+  await Promise.all(
+    admins.map(admin =>
+      createNotification({
+        userId: admin._id.toString(),
+        title: '🔔 Nuevo lead recibido',
+        message: `${lead.nombre} — Área: ${lead.area} — Score: ${lead.lead_score}`,
+        type: 'info',
+        category: 'contact',
+        link: '/leads',
+      }),
+    ),
+  )
 
   return { message: 'Lead guardado correctamente', lead }
 })
