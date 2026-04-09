@@ -1,6 +1,8 @@
-// Write your overrides
-.nav-link.active {
-  .nav-item-title {
-    color: rgba(var(--v-theme-on-primary)) !important;
+.nav-link {
+  a.router-link-active,
+  a.router-link-exact-active {
+    .nav-item-title {
+      color: white !important;
+    }
   }
 }
