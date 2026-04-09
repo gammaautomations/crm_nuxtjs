@@ -94,6 +94,17 @@ const formatDate = (date: string) => {
     month: '2-digit',
   })
 }
+
+const scoreColor = (score: number) => {
+  if (score >= 8)
+    return 'error'
+  if (score >= 6)
+    return 'warning'
+  if (score >= 4)
+    return 'info'
+
+  return 'secondary'
+}
 </script>
 
 <template>
@@ -147,6 +158,7 @@ const formatDate = (date: string) => {
             :key="lead._id"
             class="cursor-grab"
             draggable="true"
+            :style="`border-left: 4px solid rgb(var(--v-theme-${scoreColor(lead.lead_score)}))`"
             @dragstart="e => e.dataTransfer?.setData('lead', JSON.stringify(lead))"
           >
             <VCardText class="pa-3">
@@ -154,7 +166,7 @@ const formatDate = (date: string) => {
                 <span class="font-weight-semibold text-body-1">{{ lead.nombre }}</span>
                 <VChip
                   size="x-small"
-                  :color="column.color"
+                  :color="scoreColor(lead.lead_score)"
                 >
                   {{ lead.lead_score }}
                 </VChip>
