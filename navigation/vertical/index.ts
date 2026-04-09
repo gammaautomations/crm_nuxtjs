@@ -47,3 +47,13 @@ export default [
     ],
   },
 ]
+
+
+// Fix active nav link visibility
+.layout-nav-type-vertical {
+  .nav-link.active {
+    .nav-item-title {
+      color: white !important;
+    }
+  }
+}
