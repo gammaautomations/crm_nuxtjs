@@ -159,6 +159,7 @@ const scoreColor = (score: number) => {
             class="cursor-grab"
             draggable="true"
             :style="`border-left: 4px solid rgb(var(--v-theme-${scoreColor(lead.lead_score)}))`"
+            @click="navigateTo(`/leads/${lead._id}`)"
             @dragstart="e => e.dataTransfer?.setData('lead', JSON.stringify(lead))"
           >
             <VCardText class="pa-3">
