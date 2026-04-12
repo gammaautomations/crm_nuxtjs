@@ -9,19 +9,6 @@ export default defineNuxtPlugin(async () => {
 
   await authStore.fetchMe()
 
-  try {
-    const settings = await $fetch('/api/settings') as any
-
-    if (settings?.appName) {
-    // Actualizar título del documento
-      if (import.meta.client)
-        document.title = settings.appName
-    }
-  }
-  catch {
-  // silently fail
-  }
-
   let lastLeadCount = 0
   let initialized = false
 
@@ -64,6 +51,16 @@ export default defineNuxtPlugin(async () => {
   }
 
   if (import.meta.client) {
+    // Cargar nombre de la app
+    try {
+      const settings = await $fetch('/api/settings') as any
+      if (settings?.appName)
+        document.title = settings.appName
+    }
+    catch {
+      // silently fail
+    }
+
     setInterval(async () => {
       await notificationStore.fetchNotifications()
       await leadStore.fetchUnassigned()
