@@ -1,7 +1,6 @@
-// Write your overrides
 .layout-nav-type-vertical .layout-vertical-nav .nav-link > .router-link-exact-active {
   .v-icon,
   .nav-item-title {
-    color: rgb(var(--v-theme-on-primary)) !important;
+    color: rgb(var(--v-theme-primary)) !important;
   }
 }
