@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { useLeadStore } from '@/stores/useLeadStore'
+
 const leadStore = useLeadStore()
 
 const getNavItems = () => [
@@ -10,7 +12,7 @@ const getNavItems = () => [
   {
     title: 'Leads',
     icon: { icon: 'tabler-users' },
-    badgeContent: leadStore.unassignedCount > 0 ? String(leadStore.unassignedCount) : undefined,
+    badgeContent: leadStore.unassignedCount > 0 ? String(leadStore.unassignedCount) : '',
     badgeClass: 'bg-error',
     children: [
       {
