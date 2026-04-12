@@ -2,11 +2,11 @@
   a.router-link-active,
   a.router-link-exact-active {
     .nav-item-title {
-      color: blue !important;
+      color: rgb(var(--v-theme-primary)) !important;
     }
 
-    i.nav-item-icon {
-      color: blue !important;
+    .v-icon {
+      color: rgb(var(--v-theme-primary)) !important;
     }
   }
 }
