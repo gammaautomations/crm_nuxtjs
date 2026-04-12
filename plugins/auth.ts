@@ -1,5 +1,8 @@
 import { useAuthStore } from '~/stores/useAuthStore'
+import { useLeadStore } from '~/stores/useLeadStore'
 import { useNotificationStore } from '~/stores/useNotificationStore'
+
+const leadStore = useLeadStore()
 
 export default defineNuxtPlugin(async () => {
   const authStore = useAuthStore()
@@ -60,10 +63,12 @@ export default defineNuxtPlugin(async () => {
   if (import.meta.client) {
     setInterval(async () => {
       await notificationStore.fetchNotifications()
+      await leadStore.fetchUnassigned()
       await checkNewLeads()
     }, 30000)
 
     // Primera comprobación
+    await leadStore.fetchUnassigned()
     await checkNewLeads()
   }
 })
