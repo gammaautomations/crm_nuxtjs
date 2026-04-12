@@ -1,12 +1,7 @@
-.nav-link {
-  a.router-link-active,
-  a.router-link-exact-active {
-    .nav-item-title {
-      color: rgb(var(--v-theme-primary)) !important;
-    }
-
-    .v-icon {
-      color: rgb(var(--v-theme-primary)) !important;
-    }
+// Write your overrides
+.layout-nav-type-vertical .layout-vertical-nav .nav-link > .router-link-exact-active {
+  .v-icon,
+  .nav-item-title {
+    color: rgb(var(--v-theme-on-primary)) !important;
   }
 }
