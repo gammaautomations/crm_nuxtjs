@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-<script lang="ts" setup>
 import { useLeadStore } from '@/stores/useLeadStore'
 import { themeConfig } from '@themeConfig'
 
