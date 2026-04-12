@@ -8,6 +8,8 @@ import { useLayoutConfigStore } from '@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@layouts/symbols'
 import type { NavGroup, NavLink, NavSectionTitle, VerticalNavItems } from '@layouts/types'
 
+import { useSettingsStore } from '@/stores/useSettingsStore'
+
 interface Props {
   tag?: string | Component
   navItems: VerticalNavItems
@@ -54,6 +56,7 @@ const handleNavScroll = (evt: Event) => {
 }
 
 const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
+const settingsStore = useSettingsStore()
 </script>
 
 <template>
