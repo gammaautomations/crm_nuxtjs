@@ -12,10 +12,6 @@ const getNavItems = () => [
   {
     title: 'Leads',
     icon: { icon: 'tabler-users' },
-    ...(leadStore.unassignedCount > 0 && {
-      badgeContent: String(leadStore.unassignedCount),
-      badgeClass: 'bg-error',
-    }),
     children: [
       {
         title: 'Lista',
