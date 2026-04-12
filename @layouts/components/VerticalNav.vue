@@ -88,7 +88,7 @@ const settingsStore = useSettingsStore()
               v-show="!hideTitleAndIcon"
               class="app-logo-title"
             >
-              {{ layoutConfig.app.title }}
+              {{ settingsStore.appName || layoutConfig.app.title }}
             </h1>
           </Transition>
         </NuxtLink>
