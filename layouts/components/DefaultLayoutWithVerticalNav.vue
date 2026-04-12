@@ -13,13 +13,10 @@ import NavBarI18n from '@core/components/I18n.vue'
 // @layouts plugin
 import { VerticalNavLayout } from '@layouts'
 
-const settingsStore = useSettingsStore()
-
 const leadStore = useLeadStore()
+const settingsStore = useSettingsStore() // 👈 declarar primero
 
-const settingsStore = useSettingsStore()
-
-const appTitle = computed(() => settingsStore.appName || 'Garriga CRM')
+await settingsStore.fetchSettings() // 👈 luego usar
 
 const getNavItems = () => [
   {
