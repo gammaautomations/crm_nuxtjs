@@ -1,11 +1,13 @@
 import { useAuthStore } from '~/stores/useAuthStore'
 import { useLeadStore } from '~/stores/useLeadStore'
 import { useNotificationStore } from '~/stores/useNotificationStore'
+import { useSettingsStore } from '~/stores/useSettingsStore'
 
 export default defineNuxtPlugin(async () => {
   const authStore = useAuthStore()
   const notificationStore = useNotificationStore()
   const leadStore = useLeadStore()
+  const settingsStore = useSettingsStore()
 
   await authStore.fetchMe()
 
@@ -52,14 +54,9 @@ export default defineNuxtPlugin(async () => {
 
   if (import.meta.client) {
     // Cargar nombre de la app
-    try {
-      const settings = await $fetch('/api/settings') as any
-      if (settings?.appName)
-        document.title = settings.appName
-    }
-    catch {
-      // silently fail
-    }
+    await settingsStore.fetchSettings()
+    if (settingsStore.appName)
+      document.title = settingsStore.appName
 
     setInterval(async () => {
       await notificationStore.fetchNotifications()

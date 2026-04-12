@@ -7,12 +7,19 @@ import NotificationBell from '@/components/NotificationBell.vue'
 import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 import NavBarI18n from '@core/components/I18n.vue'
 
 // @layouts plugin
 import { VerticalNavLayout } from '@layouts'
 
+const settingsStore = useSettingsStore()
+
 const leadStore = useLeadStore()
+
+const settingsStore = useSettingsStore()
+
+const appTitle = computed(() => settingsStore.appName || 'Garriga CRM')
 
 const getNavItems = () => [
   {
@@ -75,6 +82,18 @@ watchEffect(() => {
 
 <template>
   <VerticalNavLayout :nav-items="navItems">
+    <!-- 👉 nav-header personalizado -->
+    <template #nav-header>
+      <NuxtLink
+        to="/"
+        class="app-logo app-title-wrapper"
+      >
+        <span style=" color: rgb(var(--v-global-theme-primary));font-size: 1.375rem; font-weight: 700; letter-spacing: 0.25px;">
+          {{ settingsStore.appName }}
+        </span>
+      </NuxtLink>
+    </template>
+
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
