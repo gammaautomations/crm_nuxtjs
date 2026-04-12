@@ -1,5 +1,17 @@
 <script lang="ts" setup>
+<script lang="ts" setup>
 import { useLeadStore } from '@/stores/useLeadStore'
+import { themeConfig } from '@themeConfig'
+
+// Components
+import NotificationBell from '@/components/NotificationBell.vue'
+import Footer from '@/layouts/components/Footer.vue'
+import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
+import UserProfile from '@/layouts/components/UserProfile.vue'
+import NavBarI18n from '@core/components/I18n.vue'
+
+// @layouts plugin
+import { VerticalNavLayout } from '@layouts'
 
 const leadStore = useLeadStore()
 
