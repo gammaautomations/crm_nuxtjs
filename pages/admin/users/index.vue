@@ -5,6 +5,41 @@ definePageMeta({
   middleware: ['auth'],
 })
 
+const authStore = useAuthStore()
+const isAdmin = computed(() => authStore.user?.role === 'Admin')
+
+const createDialog = ref(false)
+const createLoading = ref(false)
+const createErrorMsg = ref('')
+
+const createForm = ref({
+  username: '',
+  email: '',
+  password: '',
+  role: 'Recepcionista',
+})
+
+const createUser = async () => {
+  createLoading.value = true
+  createErrorMsg.value = ''
+
+  try {
+    await $fetch('/api/users', {
+      method: 'POST',
+      body: createForm.value,
+    })
+    createDialog.value = false
+    createForm.value = { username: '', email: '', password: '', role: 'Recepcionista' }
+    await refresh()
+  }
+  catch (error: any) {
+    createErrorMsg.value = error?.data?.message || 'Error al crear usuario'
+  }
+  finally {
+    createLoading.value = false
+  }
+}
+
 const { data: users, refresh } = await useFetch('/api/users')
 const { swalConfirmation } = useSweetAlert()
 
@@ -116,6 +151,20 @@ const filteredUsers = computed(() => {
             clearable
           />
         </VCardText>
+
+        <div class="d-flex align-center justify-space-between mb-6">
+          <h4 class="text-h4">
+            Usuarios
+          </h4>
+          <VBtn
+            v-if="isAdmin"
+            color="primary"
+            prepend-icon="tabler-plus"
+            @click="createDialog = true"
+          >
+            Nuevo usuario
+          </VBtn>
+        </div>
       </VCard>
       <VDataTable
         :headers="[
@@ -264,4 +313,77 @@ const filteredUsers = computed(() => {
       </VCard>
     </VDialog>
   </div>
+
+  <VDialog
+    v-model="createDialog"
+    max-width="500"
+  >
+    <VCard>
+      <VCardTitle class="pa-6">
+        Nuevo usuario
+      </VCardTitle>
+      <VCardText>
+        <VRow>
+          <VCol cols="12">
+            <AppTextField
+              v-model="createForm.username"
+              label="Username"
+              placeholder="juangarcia"
+            />
+          </VCol>
+          <VCol cols="12">
+            <AppTextField
+              v-model="createForm.email"
+              label="Email"
+              type="email"
+              placeholder="juan@despacho.com"
+            />
+          </VCol>
+          <VCol cols="12">
+            <AppTextField
+              v-model="createForm.password"
+              label="Contraseña"
+              type="password"
+              placeholder="Min. 8 caracteres"
+            />
+          </VCol>
+          <VCol cols="12">
+            <AppSelect
+              v-model="createForm.role"
+              label="Rol"
+              :items="roles"
+            />
+          </VCol>
+          <VCol
+            v-if="createErrorMsg"
+            cols="12"
+          >
+            <VAlert
+              type="error"
+              density="compact"
+            >
+              {{ createErrorMsg }}
+            </VAlert>
+          </VCol>
+        </VRow>
+      </VCardText>
+      <VCardActions class="pa-6 pt-0">
+        <VSpacer />
+        <VBtn
+          variant="outlined"
+          color="secondary"
+          @click="createDialog = false"
+        >
+          Cancelar
+        </VBtn>
+        <VBtn
+          color="primary"
+          :loading="createLoading"
+          @click="createUser"
+        >
+          Crear
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
