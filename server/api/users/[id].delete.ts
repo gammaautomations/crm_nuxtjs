@@ -1,4 +1,4 @@
-//  server/api/users/index.get.ts
+// server/api/users/[id].delete.ts
 
 import { User } from '~/server/models/User'
 import { requireRole } from '~/server/utils/auth.middleware'
@@ -8,5 +8,9 @@ export default defineEventHandler(async event => {
   await connectDB()
   requireRole(event, ['Admin'])
 
-  return await User.find().lean()
+  const id = getRouterParam(event, 'id')
+
+  await User.findByIdAndDelete(id)
+
+  return { message: 'Usuario eliminado correctamente' }
 })

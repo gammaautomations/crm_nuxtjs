@@ -44,6 +44,11 @@ const getNavItems = () => [
     icon: { icon: 'tabler-settings' },
     children: [
       {
+        title: 'Usuarios',
+        to: { name: 'admin-users' },
+        icon: { icon: 'tabler-users' },
+      },
+      {
         title: 'Abogados',
         to: { name: 'admin-lawyers' },
         icon: { icon: 'tabler-briefcase' },
