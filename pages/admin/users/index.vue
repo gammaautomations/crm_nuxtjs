@@ -83,6 +83,18 @@ const formatDate = (date: string) => {
     year: 'numeric',
   })
 }
+
+const search = ref('')
+
+const filteredUsers = computed(() => {
+  if (!search.value)
+    return (users.value as any[]) || []
+
+  return ((users.value as any[]) || []).filter((u: any) =>
+    u.username.toLowerCase().includes(search.value.toLowerCase())
+    || u.email.toLowerCase().includes(search.value.toLowerCase()),
+  )
+})
 </script>
 
 <template>
@@ -94,6 +106,17 @@ const formatDate = (date: string) => {
     </div>
 
     <VCard>
+      <VCard class="mb-6">
+        <VCardText>
+          <AppTextField
+            v-model="search"
+            label="Buscar usuario"
+            placeholder="Nombre o email..."
+            prepend-inner-icon="tabler-search"
+            clearable
+          />
+        </VCardText>
+      </VCard>
       <VDataTable
         :headers="[
           { title: 'Usuario', key: 'username' },
@@ -103,7 +126,7 @@ const formatDate = (date: string) => {
           { title: 'Último acceso', key: 'lastLogin' },
           { title: 'Acciones', key: 'actions', sortable: false },
         ]"
-        :items="(users as any[]) || []"
+        :items="filteredUsers"
         item-value="_id"
       >
         <!-- Usuario -->
