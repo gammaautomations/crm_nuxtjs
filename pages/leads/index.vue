@@ -112,6 +112,14 @@ const formatDate = (date: string) => {
       <h4 class="text-h4">
         Leads
       </h4>
+      <VBtn
+        color="success"
+        prepend-icon="tabler-file-spreadsheet"
+        href="/api/leads/export"
+        target="_blank"
+      >
+        Exportar Excel
+      </VBtn>
     </div>
 
     <!-- Filtros -->
