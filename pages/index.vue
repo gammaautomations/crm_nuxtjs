@@ -102,6 +102,14 @@ const scoreChartSeries = computed(() => [{
   name: 'Leads',
   data: leadsByScore.value.map((s: any) => s.count),
 }])
+
+onMounted(() => {
+  const interval = setInterval(async () => {
+    await refreshNuxtData()
+  }, 30000)
+
+  onUnmounted(() => clearInterval(interval))
+})
 </script>
 
 <template>
