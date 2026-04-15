@@ -1,5 +1,6 @@
 // server/api/contacts/export.get.ts
 
+import * as XLSX from 'xlsx'
 import { Contact } from '~/server/models/Contact'
 import { requireAuth } from '~/server/utils/auth.middleware'
 import { connectDB } from '~/server/utils/db'
@@ -11,58 +12,28 @@ export default defineEventHandler(async event => {
 
   const contacts = await Contact.find({ owner: decoded.id }).lean()
 
-  // Generar CSV
-  const headers = [
-    'Nombre',
-    'Apellidos',
-    'Email',
-    'Email2',
-    'Teléfono',
-    'Teléfono2',
-    'WhatsApp',
-    'Empresa',
-    'Cargo',
-    'Web',
-    'Dirección',
-    'Ciudad',
-    'Provincia',
-    'País',
-    'LinkedIn',
-    'Twitter',
-    'Estado',
-    'Origen',
-    'Tags',
-    'Notas',
-  ]
+  const data = contacts.map((c: any) => ({
+    Nombre: c.firstName || '',
+    Apellidos: c.lastName || '',
+    Email: c.email || '',
+    Teléfono: c.phone || '',
+    Empresa: c.company || '',
+    Estado: c.status || '',
+    Origen: c.source || '',
+    Tags: (c.tags || []).join(';'),
+    Notas: c.notes || '',
+    Fecha: new Date(c.createdAt).toLocaleDateString('es-ES'),
+  }))
 
-  const rows = contacts.map(c => [
-    c.firstName || '',
-    c.lastName || '',
-    c.email || '',
-    c.email2 || '',
-    c.phone || '',
-    c.phone2 || '',
-    c.whatsapp || '',
-    c.company || '',
-    c.jobTitle || '',
-    c.website || '',
-    c.address || '',
-    c.city || '',
-    c.state || '',
-    c.country || '',
-    c.linkedin || '',
-    c.twitter || '',
-    c.status || '',
-    c.source || '',
-    (c.tags || []).join(';'),
-    c.notes || '',
-  ].map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))
+  const ws = XLSX.utils.json_to_sheet(data)
+  const wb = XLSX.utils.book_new()
 
-  const csv = [headers.join(','), ...rows].join('\n')
+  XLSX.utils.book_append_sheet(wb, ws, 'Contactos')
 
-  // Configurar headers de respuesta
-  setHeader(event, 'Content-Type', 'text/csv; charset=utf-8')
-  setHeader(event, 'Content-Disposition', 'attachment; filename="contactos.csv"')
+  const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
 
-  return csv
+  setHeader(event, 'Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  setHeader(event, 'Content-Disposition', `attachment; filename="contactos_${new Date().toISOString().split('T')[0]}.xlsx"`)
+
+  return buffer
 })
