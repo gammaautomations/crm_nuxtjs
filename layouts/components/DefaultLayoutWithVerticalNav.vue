@@ -9,63 +9,85 @@ import { VerticalNavLayout } from '@layouts'
 import { themeConfig } from '@themeConfig'
 
 const leadStore = useLeadStore()
+const authStore = useAuthStore()
+const role = computed(() => authStore.user?.role)
 
-const getNavItems = () => [
-  {
-    title: 'Dashboard',
-    to: { name: 'index' },
-    icon: { icon: 'tabler-smart-home' },
-  },
-  {
-    title: 'Leads',
-    icon: { icon: 'tabler-users' },
-    badgeContent: leadStore.unassignedCount > 0 ? String(leadStore.unassignedCount) : null,
-    badgeClass: 'bg-error',
-    children: [
-      {
-        title: 'Lista',
-        to: { name: 'leads' },
-        icon: { icon: 'tabler-list' },
-      },
-      {
-        title: 'Kanban',
-        to: { name: 'leads-kanban' },
-        icon: { icon: 'tabler-layout-kanban' },
-      },
-    ],
-  },
-  {
-    title: 'Contactos',
-    to: { name: 'contacts' },
-    icon: { icon: 'tabler-address-book' },
-  },
-  {
-    title: 'Administración',
-    icon: { icon: 'tabler-settings' },
-    children: [
-      {
-        title: 'Usuarios',
-        to: { name: 'admin-users' },
-        icon: { icon: 'tabler-users' },
-      },
-      {
-        title: 'Abogados',
-        to: { name: 'admin-lawyers' },
-        icon: { icon: 'tabler-briefcase' },
-      },
-      {
-        title: 'Especialidades',
-        to: { name: 'admin-specialties' },
-        icon: { icon: 'tabler-certificate' },
-      },
-      {
-        title: 'Configuración',
-        to: { name: 'admin' },
-        icon: { icon: 'tabler-adjustments' },
-      },
-    ],
-  },
-]
+const getNavItems = () => {
+  const items: any[] = [
+    {
+      title: 'Dashboard',
+      to: { name: 'index' },
+      icon: { icon: 'tabler-smart-home' },
+    },
+  ]
+
+  if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
+    items.push({
+      title: 'Leads',
+      icon: { icon: 'tabler-users' },
+      badgeContent: leadStore.unassignedCount > 0 ? String(leadStore.unassignedCount) : null,
+      badgeClass: 'bg-error',
+      children: [
+        {
+          title: 'Lista',
+          to: { name: 'leads' },
+          icon: { icon: 'tabler-list' },
+        },
+        {
+          title: 'Kanban',
+          to: { name: 'leads-kanban' },
+          icon: { icon: 'tabler-layout-kanban' },
+        },
+      ],
+    })
+  }
+
+  if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
+    items.push({
+      title: 'Contactos',
+      to: { name: 'contacts' },
+      icon: { icon: 'tabler-address-book' },
+    })
+  }
+
+  if (['Admin', 'Superuser'].includes(role.value || '')) {
+    const adminChildren: any[] = []
+
+    if (role.value === 'Admin') {
+      adminChildren.push(
+        {
+          title: 'Usuarios',
+          to: { name: 'admin-users' },
+          icon: { icon: 'tabler-user-cog' },
+        },
+        {
+          title: 'Abogados',
+          to: { name: 'admin-lawyers' },
+          icon: { icon: 'tabler-briefcase' },
+        },
+        {
+          title: 'Especialidades',
+          to: { name: 'admin-specialties' },
+          icon: { icon: 'tabler-certificate' },
+        },
+      )
+    }
+
+    adminChildren.push({
+      title: 'Configuración',
+      to: { name: 'admin' },
+      icon: { icon: 'tabler-adjustments' },
+    })
+
+    items.push({
+      title: 'Administración',
+      icon: { icon: 'tabler-settings' },
+      children: adminChildren,
+    })
+  }
+
+  return items
+}
 
 const navItems = ref(getNavItems())
 
