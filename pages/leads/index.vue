@@ -9,16 +9,18 @@ const search = ref('')
 const statusFilter = ref('')
 const areaFilter = ref('')
 const page = ref(1)
+const lawyerFilter = ref('')
 
 const { data, refresh, pending } = useFetch('/api/leads', {
   query: computed(() => ({
     search: search.value || undefined,
     status: statusFilter.value || undefined,
     area: areaFilter.value || undefined,
+    lawyer: lawyerFilter.value || undefined,
     page: page.value,
     limit: 20,
   })),
-  watch: [search, statusFilter, areaFilter, page],
+  watch: [search, statusFilter, areaFilter, lawyerFilter, page],
 })
 
 const leads = computed(() => (data.value as any)?.data || [])
@@ -160,6 +162,16 @@ const formatDate = (date: string) => {
           </VCol>
           <VCol
             cols="12"
+            md="3"
+          >
+            <AppSelect
+              v-model="lawyerFilter"
+              label="Abogado"
+              :items="[{ title: 'Todos', value: '' }, ...lawyersList.map((l: any) => ({ title: l.name, value: l._id }))]"
+            />
+          </VCol>
+          <VCol
+            cols="12"
             md="2"
             class="d-flex align-center"
           >
@@ -167,7 +179,7 @@ const formatDate = (date: string) => {
               variant="outlined"
               color="secondary"
               block
-              @click="search = ''; statusFilter = ''; areaFilter = ''; page = 1"
+              @click="search = ''; statusFilter = ''; areaFilter = ''; lawyerFilter = ''; page = 1"
             >
               Limpiar
             </VBtn>

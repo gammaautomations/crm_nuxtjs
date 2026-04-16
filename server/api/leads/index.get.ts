@@ -26,6 +26,8 @@ export default defineEventHandler(async event => {
       { email: { $regex: query.search, $options: 'i' } },
     ]
   }
+  if (query.lawyer)
+    filter.assignedLawyer = query.lawyer
 
   const [leads, total] = await Promise.all([
     Lead.find(filter)
