@@ -84,6 +84,12 @@ const getNavItems = () => {
       icon: { icon: 'tabler-settings' },
       children: adminChildren,
     })
+
+    items.push({
+      title: 'Mi Perfil',
+      to: { name: 'user-profile' },
+      icon: { icon: 'tabler-user-circle' },
+    })
   }
 
   return items
