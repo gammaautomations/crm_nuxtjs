@@ -12,7 +12,18 @@ export default defineEventHandler(async event => {
 
   const lead = await Lead.findByIdAndUpdate(
     id,
-    { assignedLawyer: lawyerId, status: 'contactado' },
+    {
+      assignedLawyer: lawyerId,
+      status: 'contactado',
+      $push: {
+        activity: {
+          action: 'asignacion',
+          description: 'Lead asignado a abogado',
+          user: (event.context.user as any)?._id,
+          date: new Date(),
+        },
+      },
+    },
     { returnDocument: 'after' },
   ).populate('assignedLawyer', 'name email')
 

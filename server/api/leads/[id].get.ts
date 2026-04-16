@@ -10,6 +10,7 @@ export default defineEventHandler(async event => {
 
   const lead = await Lead.findById(id)
     .populate('assignedLawyer', 'name email phone')
+    .populate('activity.user', 'username')
     .lean()
 
   if (!lead)

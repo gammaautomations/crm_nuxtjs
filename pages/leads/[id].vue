@@ -340,6 +340,49 @@ const formatDate = (date: string) => {
             </VRow>
           </VCardText>
         </VCard>
+
+        <!-- Historial de actividad -->
+        <VCard>
+          <VCardText>
+            <p class="text-overline text-uppercase mb-4">
+              Historial de actividad
+            </p>
+            <div v-if="(lead as any).activity?.length">
+              <div
+                v-for="(item, index) in [...(lead as any).activity].reverse()"
+                :key="index"
+                class="d-flex gap-3 mb-4"
+              >
+                <VAvatar
+                  color="primary"
+                  variant="tonal"
+                  size="36"
+                  class="flex-shrink-0"
+                >
+                  <VIcon
+                    icon="tabler-history"
+                    size="18"
+                  />
+                </VAvatar>
+                <div>
+                  <p class="font-weight-medium mb-0">
+                    {{ item.description }}
+                  </p>
+                  <p class="text-body-2 text-disabled mb-0">
+                    {{ item.user?.username || 'Sistema' }} —
+                    {{ new Date(item.date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <p
+              v-else
+              class="text-disabled text-center pa-4"
+            >
+              Sin actividad registrada
+            </p>
+          </VCardText>
+        </VCard>
       </VCol>
     </VRow>
   </div>

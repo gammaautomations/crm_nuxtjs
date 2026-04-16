@@ -4,6 +4,13 @@ import mongoose from 'mongoose'
 
 const LeadSchema = new mongoose.Schema(
   {
+    activity: [{
+      action: { type: String, required: true },
+      description: { type: String },
+      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      date: { type: Date, default: Date.now },
+    }],
+
     // Datos del formulario
     fecha_envio: { type: Date, default: Date.now },
     nombre: { type: String, trim: true },
