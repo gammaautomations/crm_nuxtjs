@@ -1,3 +1,5 @@
+// UserSessionsPanel.vue
+
 <script setup lang="ts">
 const { data: userData } = await useFetch('/api/users/me/sessions')
 const sessions = computed(() => (userData.value as any)?.sessions ?? [])

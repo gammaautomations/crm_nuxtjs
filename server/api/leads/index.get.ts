@@ -39,8 +39,6 @@ export default defineEventHandler(async event => {
     Lead.countDocuments(filter),
   ])
 
-  console.log('assignedLawyer:', JSON.stringify(leads[0]?.assignedLawyer))
-
   return {
     data: leads,
     pagination: {
