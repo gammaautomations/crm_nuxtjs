@@ -12,6 +12,8 @@ export default defineNitroPlugin(async () => {
   try {
     await connectDB()
     console.log('✅ DB conectada')
+    await User.init()
+    console.log('✅ User ok')
     await (GeneralSetting as any).get()
     console.log('✅ GeneralSetting ok')
     await Contact.init()
@@ -24,9 +26,6 @@ export default defineNitroPlugin(async () => {
     await Lawyer.init()
     console.log('✅ Specialty y Lawyer ok')
     console.log('✅ Modelos inicializados')
-
-    await User.init()
-    console.log('✅ User ok')
   }
   catch (error) {
     console.error('❌ Error inicializando modelos:', error)
