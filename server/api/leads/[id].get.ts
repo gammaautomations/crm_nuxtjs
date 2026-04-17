@@ -1,10 +1,14 @@
 import { Lead } from '~/server/models/Lead'
+import { User } from '~/server/models/User'
 import { requireAuth } from '~/server/utils/auth.middleware'
 import { connectDB } from '~/server/utils/db'
 
 export default defineEventHandler(async event => {
   await connectDB()
   requireAuth(event)
+
+  // Forzar registro del modelo User
+  void User
 
   const id = getRouterParam(event, 'id')
 
