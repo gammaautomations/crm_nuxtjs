@@ -14,3 +14,5 @@ pnpm install -D @types/formidable
 pnpm install nodemailer
 pnpm install -D @types/nodemailer
 pnpm add xlsx
+pnpm add ua-parser-js
+pnpm add -D @types/ua-parser-js

@@ -71,6 +71,14 @@ const UserSchema = new mongoose.Schema(
       type: Date,
     },
 
+    sessions: [{
+      ip: { type: String },
+      userAgent: { type: String },
+      browser: { type: String },
+      os: { type: String },
+      date: { type: Date, default: Date.now },
+    }],
+
     verificationCode: {
       type: String,
       select: false,
