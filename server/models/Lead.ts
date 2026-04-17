@@ -34,6 +34,12 @@ const LeadSchema = new mongoose.Schema(
     motivo_score_bajo: { type: String, trim: true },
     email_enviado: { type: String, trim: true },
 
+    comments: [{
+      text: { type: String, required: true },
+      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      createdAt: { type: Date, default: Date.now },
+    }],
+
     // Metadata
     assignedLawyer: {
       type: mongoose.Schema.Types.ObjectId,

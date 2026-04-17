@@ -3,6 +3,8 @@ definePageMeta({
   middleware: ['auth'],
 })
 
+const authStore = useAuthStore()
+
 const route = useRoute()
 const router = useRouter()
 
@@ -101,6 +103,29 @@ const changeStatus = async () => {
   }
   finally {
     statusLoading.value = false
+  }
+}
+
+const newComment = ref('')
+const commentLoading = ref(false)
+
+const addComment = async () => {
+  if (!newComment.value.trim())
+    return
+  commentLoading.value = true
+  try {
+    await $fetch(`/api/leads/${route.params.id}/comments`, {
+      method: 'POST',
+      body: { text: newComment.value },
+    })
+    newComment.value = ''
+    await refresh()
+  }
+  catch (error: any) {
+    console.error(error)
+  }
+  finally {
+    commentLoading.value = false
   }
 }
 </script>
@@ -496,6 +521,88 @@ const changeStatus = async () => {
               >
                 Sin actividad registrada
               </p>
+            </VCardText>
+          </VCard>
+
+          <!-- Comentarios -->
+          <VCard class="mt-6">
+            <VCardText>
+              <p class="text-overline text-uppercase mb-4">
+                Comentarios internos
+              </p>
+
+              <!-- Lista de comentarios -->
+              <div
+                v-if="(lead as any).comments?.length"
+                class="mb-6"
+              >
+                <div
+                  v-for="(comment, index) in [...(lead as any).comments].reverse()"
+                  :key="index"
+                  class="d-flex gap-3 mb-4"
+                >
+                  <VAvatar
+                    color="secondary"
+                    variant="tonal"
+                    size="36"
+                    class="flex-shrink-0"
+                  >
+                    <span>{{ comment.user?.username?.charAt(0).toUpperCase() || '?' }}</span>
+                  </VAvatar>
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-center gap-2 mb-1">
+                      <span class="font-weight-medium text-body-2">{{ comment.user?.username || 'Usuario' }}</span>
+                      <span class="text-caption text-disabled">
+                        {{ new Date(comment.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+                      </span>
+                    </div>
+                    <p
+                      class="text-body-2 mb-0 pa-3 rounded"
+                      style=" border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));background: rgba(var(--v-theme-surface-variant), 0.1);"
+                    >
+                      {{ comment.text }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p
+                v-else
+                class="text-disabled text-center pa-4 mb-4"
+              >
+                Sin comentarios
+              </p>
+
+              <!-- Nuevo comentario -->
+              <div class="d-flex gap-3">
+                <VAvatar
+                  color="primary"
+                  variant="tonal"
+                  size="36"
+                  class="flex-shrink-0"
+                >
+                  <span>{{ authStore.user?.username?.charAt(0).toUpperCase() }}</span>
+                </VAvatar>
+                <div class="flex-grow-1">
+                  <AppTextarea
+                    v-model="newComment"
+                    placeholder="Escribe un comentario interno..."
+                    rows="2"
+                    auto-grow
+                    hide-details
+                  />
+                  <div class="d-flex justify-end mt-2">
+                    <VBtn
+                      color="primary"
+                      size="small"
+                      :loading="commentLoading"
+                      :disabled="!newComment.trim()"
+                      @click="addComment"
+                    >
+                      Comentar
+                    </VBtn>
+                  </div>
+                </div>
+              </div>
             </VCardText>
           </VCard>
         </VCol>
