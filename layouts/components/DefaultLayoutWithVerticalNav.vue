@@ -1,9 +1,9 @@
 <script lang="ts" setup>
+import GlobalSearch from '@/components/GlobalSearch.vue'
 import NotificationBell from '@/components/NotificationBell.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import { useLeadStore } from '@/stores/useLeadStore'
-import AppBarSearch from '@core/components/AppBarSearch.vue'
 import NavBarI18n from '@core/components/I18n.vue'
 import { themeConfig } from '@themeConfig'
 
@@ -117,7 +117,7 @@ watchEffect(() => {
     <NavbarThemeSwitcher />
 
     <!-- 👉 Búsqueda global -->
-    <AppBarSearch />
+    <GlobalSearch class="me-2" />
 
     <VSpacer />
 
