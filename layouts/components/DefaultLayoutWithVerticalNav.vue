@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import GlobalSearch from '@/components/GlobalSearch.vue'
 import NotificationBell from '@/components/NotificationBell.vue'
+import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import { useLeadStore } from '@/stores/useLeadStore'
 import NavBarI18n from '@core/components/I18n.vue'
+import { VerticalNavLayout } from '@layouts'
 import { themeConfig } from '@themeConfig'
 
 const leadStore = useLeadStore()
@@ -83,13 +85,13 @@ const getNavItems = () => {
       icon: { icon: 'tabler-settings' },
       children: adminChildren,
     })
-
-    items.push({
-      title: 'Mi Perfil',
-      to: { name: 'user-profile' },
-      icon: { icon: 'tabler-user-circle' },
-    })
   }
+
+  items.push({
+    title: 'Mi Perfil',
+    to: { name: 'user-profile' },
+    icon: { icon: 'tabler-user-circle' },
+  })
 
   return items
 }
@@ -101,31 +103,43 @@ watchEffect(() => {
 })
 </script>
 
-<template #navbar="{ toggleVerticalOverlayNavActive }">
-  <div class="d-flex h-100 align-center">
-    <IconBtn
-      id="vertical-nav-toggle-btn"
-      class="ms-n3 d-lg-none"
-      @click="toggleVerticalOverlayNavActive(true)"
-    >
-      <VIcon
-        size="26"
-        icon="tabler-menu-2"
-      />
-    </IconBtn>
+<template>
+  <VerticalNavLayout :nav-items="navItems">
+    <!-- 👉 navbar -->
+    <template #navbar="{ toggleVerticalOverlayNavActive }">
+      <div class="d-flex h-100 align-center">
+        <IconBtn
+          id="vertical-nav-toggle-btn"
+          class="ms-n3 d-lg-none"
+          @click="toggleVerticalOverlayNavActive(true)"
+        >
+          <VIcon
+            size="26"
+            icon="tabler-menu-2"
+          />
+        </IconBtn>
 
-    <NavbarThemeSwitcher />
+        <NavbarThemeSwitcher />
 
-    <!-- 👉 Búsqueda global -->
-    <GlobalSearch class="me-2" />
+        <GlobalSearch class="me-2" />
 
-    <VSpacer />
+        <VSpacer />
 
-    <NavBarI18n
-      v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
-      :languages="themeConfig.app.i18n.langConfig"
-    />
-    <NotificationBell class="me-4" />
-    <UserProfile />
-  </div>
+        <NavBarI18n
+          v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
+          :languages="themeConfig.app.i18n.langConfig"
+        />
+        <NotificationBell class="me-4" />
+        <UserProfile />
+      </div>
+    </template>
+
+    <!-- 👉 Pages -->
+    <slot />
+
+    <!-- 👉 Footer -->
+    <template #footer>
+      <Footer />
+    </template>
+  </VerticalNavLayout>
 </template>
