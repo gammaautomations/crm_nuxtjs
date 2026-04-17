@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { data: userData } = await useFetch('/api/users/me/sessions')
-const sessions = computed(() => (userData.value as any)?.sessions || [])
+const sessions = computed(() => (userData.value as any)?.sessions ?? [])
 
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('es-ES', {
