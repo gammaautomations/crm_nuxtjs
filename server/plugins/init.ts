@@ -4,6 +4,7 @@ import { Lawyer } from '~/server/models/Lawyer'
 import { Lead } from '~/server/models/Lead'
 import { Notification } from '~/server/models/Notification'
 import { Specialty } from '~/server/models/Specialty'
+import { User } from '~/server/models/User'
 import { connectDB } from '~/server/utils/db'
 
 export default defineNitroPlugin(async () => {
@@ -23,6 +24,9 @@ export default defineNitroPlugin(async () => {
     await Lawyer.init()
     console.log('✅ Specialty y Lawyer ok')
     console.log('✅ Modelos inicializados')
+
+    await User.init()
+    console.log('✅ User ok')
   }
   catch (error) {
     console.error('❌ Error inicializando modelos:', error)
