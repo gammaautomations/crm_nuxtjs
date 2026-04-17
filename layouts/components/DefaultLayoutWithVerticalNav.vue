@@ -67,6 +67,11 @@ const getNavItems = () => {
           icon: { icon: 'tabler-briefcase' },
         },
         {
+          title: 'Estadísticas abogados',
+          to: { name: 'admin-lawyers-stats' },
+          icon: { icon: 'tabler-chart-bar' },
+        },
+        {
           title: 'Especialidades',
           to: { name: 'admin-specialties' },
           icon: { icon: 'tabler-certificate' },
