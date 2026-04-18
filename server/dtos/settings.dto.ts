@@ -36,6 +36,18 @@ export interface UpdateSettingsDto {
   maintenanceMode?: boolean
   maintenanceTitle?: string
   maintenanceMessage?: string
+
+  // FACTURACIÓN
+  companyName?: string
+  companyNif?: string
+  companyEmail?: string
+  companyPhone?: string
+  companyAddress?: string
+  companyCity?: string
+  companyZip?: string
+  companyIsland?: string
+  companyProvince?: string
+  cabildoReg?: string
 }
 
 export const validateUpdateSettingsDto = (body: any): UpdateSettingsDto => {
@@ -93,6 +105,16 @@ export const validateUpdateSettingsDto = (body: any): UpdateSettingsDto => {
     'timezone',
     'maintenanceTitle',
     'maintenanceMessage',
+    'companyName',
+    'companyNif',
+    'companyEmail',
+    'companyPhone',
+    'companyAddress',
+    'companyCity',
+    'companyZip',
+    'companyIsland',
+    'companyProvince',
+    'cabildoReg',
   ]
 
   for (const field of simpleFields) {

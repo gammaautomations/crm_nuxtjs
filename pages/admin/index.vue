@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SettingsAplicationPanel from '@/views/admin/settings/SettingsAplicationPanel.vue'
 import SettingsAppearancePanel from '@/views/admin/settings/SettingsAppearancePanel.vue'
+import SettingsBillingPanel from '@/views/admin/settings/SettingsBillingPanel.vue'
 import SettingsContactPanel from '@/views/admin/settings/SettingsContactPanel.vue'
 import SettingsLegalPanel from '@/views/admin/settings/SettingsLegalPanel.vue'
 import SettingsMaintemancePanel from '@/views/admin/settings/SettingsMaintemancePanel.vue'
@@ -25,6 +26,7 @@ const tabs = [
   { icon: 'tabler-mail', title: 'Contacto', value: 2 },
   { icon: 'tabler-alert-circle', title: 'Legal', value: 3 },
   { icon: 'tabler-tools', title: 'Mantenimiento', value: 4 },
+  { icon: 'tabler-file-invoice', title: 'Datos de facturación', value: 5 },
 ]
 
 const userTab = ref(0)
@@ -74,6 +76,10 @@ const userTab = ref(0)
 
         <VWindowItem :value="4">
           <SettingsMaintemancePanel />
+        </VWindowItem>
+
+        <VWindowItem :value="5">
+          <SettingsBillingPanel />
         </VWindowItem>
       </VWindow>
     </VCol>

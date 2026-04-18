@@ -29,6 +29,18 @@ export const useSettings = () => {
     maintenanceMode: false,
     maintenanceTitle: '',
     maintenanceMessage: '',
+
+    // FACTURACIÓN
+    companyName: '',
+    companyNif: '',
+    companyEmail: '',
+    companyPhone: '',
+    companyAddress: '',
+    companyCity: '',
+    companyZip: '',
+    companyIsland: '',
+    companyProvince: '',
+    cabildoReg: '',
   })
 
   // Cargar datos cuando lleguen

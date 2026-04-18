@@ -85,6 +85,60 @@ const generalSettingSchema = new mongoose.Schema(
       enum: ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'],
     },
 
+    // DATOS DE FACTURACIÓN
+    companyName: {
+      type: String,
+      default: null,
+      trim: true,
+      maxlength: [200, 'El nombre no puede exceder los 200 caracteres'],
+    },
+    companyNif: {
+      type: String,
+      default: null,
+      trim: true,
+      maxlength: [20, 'El NIF no puede exceder los 20 caracteres'],
+    },
+    companyEmail: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    companyPhone: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    companyAddress: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    companyCity: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    companyZip: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    companyIsland: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    companyProvince: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    cabildoReg: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
     // MANTENIMIENTO
     maintenanceMode: { type: Boolean, default: false },
     maintenanceTitle: {
