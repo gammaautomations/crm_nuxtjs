@@ -21,22 +21,36 @@ const lawyers = computed(() => lawyersData.value || [])
 const loading = ref(false)
 const errorMsg = ref('')
 
-// ─── Emisor (pre-rellenado desde settings) ────────────────────────────────────
+// ─── Emisor ───────────────────────────────────────────────────────────────────
 const issuer = ref({
-  name: (settingsData.value as any)?.companyName || '',
-  nif: (settingsData.value as any)?.companyNif || '',
-  email: (settingsData.value as any)?.companyEmail || '',
-  phone: (settingsData.value as any)?.companyPhone || '',
-  cabildoReg: (settingsData.value as any)?.cabildoReg || '',
-  address: {
-    street: (settingsData.value as any)?.companyAddress || '',
-    city: (settingsData.value as any)?.companyCity || '',
-    zip: (settingsData.value as any)?.companyZip || '',
-    island: (settingsData.value as any)?.companyIsland || '',
-    province: (settingsData.value as any)?.companyProvince || '',
-    country: 'ES',
-  },
+  name: '',
+  nif: '',
+  email: '',
+  phone: '',
+  cabildoReg: '',
+  address: { street: '', city: '', zip: '', island: '', province: '', country: 'ES' },
 })
+
+// Se carga desde settings cuando llegan los datos
+watch(settingsData, (val: any) => {
+  if (!val || isEdit.value)
+    return
+  issuer.value = {
+    name: val.companyName || '',
+    nif: val.companyNif || '',
+    email: val.companyEmail || '',
+    phone: val.companyPhone || '',
+    cabildoReg: val.cabildoReg || '',
+    address: {
+      street: val.companyAddress || '',
+      city: val.companyCity || '',
+      zip: val.companyZip || '',
+      island: val.companyIsland || '',
+      province: val.companyProvince || '',
+      country: 'ES',
+    },
+  }
+}, { immediate: true })
 
 // ─── Formulario principal ─────────────────────────────────────────────────────
 const form = ref({
@@ -51,7 +65,7 @@ const form = ref({
   internalNotes: '',
 })
 
-// ─── Cliente (se autocompleta al elegir contacto) ─────────────────────────────
+// ─── Cliente ──────────────────────────────────────────────────────────────────
 const client = ref({
   name: '',
   nif: '',
@@ -95,9 +109,7 @@ const lines = ref<Line[]>([
   { description: '', quantity: 1, unitPrice: 0, igicRate: 7, discount: 0 },
 ])
 
-const addLine = () => {
-  lines.value.push({ description: '', quantity: 1, unitPrice: 0, igicRate: 7, discount: 0 })
-}
+const addLine = () => lines.value.push({ description: '', quantity: 1, unitPrice: 0, igicRate: 7, discount: 0 })
 
 const removeLine = (i: number) => {
   if (lines.value.length > 1)
