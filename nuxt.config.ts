@@ -131,6 +131,12 @@ export default defineNuxtConfig({
     },
 
     build: {
+      rollupOptions: {
+        external: [
+          'puppeteer-core',
+          '@sparticuz/chromium',
+        ],
+      },
       chunkSizeWarningLimit: 5000,
     },
 
@@ -188,6 +194,9 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    externals: {
+      inline: ['puppeteer-core', '@sparticuz/chromium'],
+    },
     preset: 'node-server',
     trustProxy: true,
     routeRules: {
