@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IGIC_RATES } from '~/server/models/Invoice'
+import { IGIC_RATES } from '@/utils/igic'
 
 definePageMeta({
   middleware: ['auth'],
