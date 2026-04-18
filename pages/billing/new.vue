@@ -29,11 +29,11 @@ const issuer = ref({
   phone: (settingsData.value as any)?.companyPhone || '',
   cabildoReg: (settingsData.value as any)?.cabildoReg || '',
   address: {
-    street: (settingsData.value as any)?.address?.street || '',
-    city: (settingsData.value as any)?.address?.city || '',
-    zip: (settingsData.value as any)?.address?.zip || '',
-    island: (settingsData.value as any)?.address?.island || '',
-    province: (settingsData.value as any)?.address?.province || '',
+    street: (settingsData.value as any)?.companyAddress || '',
+    city: (settingsData.value as any)?.companyCity || '',
+    zip: (settingsData.value as any)?.companyZip || '',
+    island: (settingsData.value as any)?.companyIsland || '',
+    province: (settingsData.value as any)?.companyProvince || '',
     country: 'ES',
   },
 })
