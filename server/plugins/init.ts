@@ -1,5 +1,6 @@
 import { Contact } from '~/server/models/Contact'
 import { GeneralSetting } from '~/server/models/GeneralSetting'
+import Invoice from '~/server/models/Invoice'
 import { Lawyer } from '~/server/models/Lawyer'
 import { Lead } from '~/server/models/Lead'
 import { Notification } from '~/server/models/Notification'
