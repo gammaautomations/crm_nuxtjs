@@ -227,6 +227,19 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
     loading.value = false
   }
 }
+
+// Forzar recarga del emisor cuando el componente monta
+onMounted(async () => {
+  if (isEdit.value)
+    return
+  const val = await $fetch<any>('/api/settings')
+
+  issuer.value.address.street = val.companyAddress || ''
+  issuer.value.address.city = val.companyCity || ''
+  issuer.value.address.zip = val.companyZip || ''
+  issuer.value.address.island = val.companyIsland || ''
+  issuer.value.address.province = val.companyProvince || ''
+})
 </script>
 
 <template>
