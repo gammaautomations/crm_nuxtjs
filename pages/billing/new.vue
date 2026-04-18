@@ -240,6 +240,8 @@ onMounted(async () => {
   issuer.value.address.island = val.companyIsland || ''
   issuer.value.address.province = val.companyProvince || ''
 })
+
+console.log('Hello world')
 </script>
 
 <template>

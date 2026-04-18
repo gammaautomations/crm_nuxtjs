@@ -1,230 +1,144 @@
 <script setup lang="ts">
-import { IGIC_RATES } from '@/utils/igic'
-
+// pages/billing/index.vue
 definePageMeta({
   middleware: ['auth'],
 })
 
-const route = useRouter()
-const params = useRoute().params
-const isEdit = computed(() => !!params.id)
+const { swalConfirmation } = useSweetAlert()
 
-// ─── Datos auxiliares ─────────────────────────────────────────────────────────
-const { data: contactsData } = await useFetch('/api/contacts?limit=200')
-const { data: lawyersData } = await useFetch('/api/lawyers')
-const { data: settingsData } = await useFetch('/api/settings')
+// ─── Filtros ──────────────────────────────────────────────────────────────────
+const search = ref('')
+const status = ref('')
+const dateFrom = ref('')
+const dateTo = ref('')
+const page = ref(1)
+const limit = 20
 
-const contacts = computed(() => (contactsData.value as any)?.data || contactsData.value || [])
-const lawyers = computed(() => lawyersData.value || [])
-
-// ─── Estado UI ────────────────────────────────────────────────────────────────
-const loading = ref(false)
-const errorMsg = ref('')
-
-// ─── Emisor (pre-rellenado desde settings) ────────────────────────────────────
-const issuer = ref({
-  name: (settingsData.value as any)?.companyName || '',
-  nif: (settingsData.value as any)?.companyNif || '',
-  email: (settingsData.value as any)?.companyEmail || '',
-  phone: (settingsData.value as any)?.companyPhone || '',
-  cabildoReg: (settingsData.value as any)?.cabildoReg || '',
-  address: {
-    street: (settingsData.value as any)?.address?.street || '',
-    city: (settingsData.value as any)?.address?.city || '',
-    zip: (settingsData.value as any)?.address?.zip || '',
-    island: (settingsData.value as any)?.address?.island || '',
-    province: (settingsData.value as any)?.address?.province || '',
-    country: 'ES',
-  },
+// ─── Fetch ────────────────────────────────────────────────────────────────────
+const { data, refresh, pending } = await useFetch('/api/invoices', {
+  query: computed(() => ({
+    page: page.value,
+    limit,
+    search: search.value || undefined,
+    status: status.value || undefined,
+    from: dateFrom.value || undefined,
+    to: dateTo.value || undefined,
+    sortBy: 'issuedAt',
+    sortOrder: 'desc',
+  })),
+  watch: [page, search, status, dateFrom, dateTo],
 })
 
-// ─── Formulario principal ─────────────────────────────────────────────────────
-const form = ref({
-  series: 'F',
-  type: 'invoice',
-  status: 'draft',
-  contactId: '',
-  lawyerId: '',
-  issuedAt: new Date().toISOString().split('T')[0],
-  dueDate: '',
-  notes: '',
-  internalNotes: '',
-})
+const { data: statsData } = await useFetch('/api/invoices/stats')
 
-// ─── Cliente (se autocompleta al elegir contacto) ─────────────────────────────
-const client = ref({
-  name: '',
-  nif: '',
-  email: '',
-  phone: '',
-  cabildoReg: '',
-  address: { street: '', city: '', zip: '', island: '', province: '', country: 'ES' },
-})
+const invoices = computed(() => (data.value as any)?.data || [])
+const meta = computed(() => (data.value as any)?.meta || { total: 0, totalPages: 1 })
+const stats = computed(() => (statsData.value as any)?.summary || {})
 
-const onContactChange = (contactId: string) => {
-  const contact = (contacts.value as any[]).find((c: any) => c._id === contactId)
-  if (!contact)
-    return
-  client.value = {
-    name: contact.name || '',
-    nif: contact.nif || '',
-    email: contact.email || '',
-    phone: contact.phone || '',
-    cabildoReg: contact.cabildoReg || '',
-    address: {
-      street: contact.address?.street || '',
-      city: contact.address?.city || '',
-      zip: contact.address?.zip || '',
-      island: contact.address?.island || '',
-      province: contact.address?.province || '',
-      country: contact.address?.country || 'ES',
-    },
-  }
+// ─── Debounce búsqueda ────────────────────────────────────────────────────────
+let searchTimeout: ReturnType<typeof setTimeout>
+
+const onSearch = (val: string) => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => { search.value = val; page.value = 1 }, 400)
 }
 
-// ─── Líneas ───────────────────────────────────────────────────────────────────
-interface Line {
-  description: string
-  quantity: number
-  unitPrice: number
-  igicRate: number
-  discount: number
-}
-
-const lines = ref<Line[]>([
-  { description: '', quantity: 1, unitPrice: 0, igicRate: 7, discount: 0 },
-])
-
-const addLine = () => {
-  lines.value.push({ description: '', quantity: 1, unitPrice: 0, igicRate: 7, discount: 0 })
-}
-
-const removeLine = (i: number) => {
-  if (lines.value.length > 1)
-    lines.value.splice(i, 1)
-}
-
-// ─── Cálculos en tiempo real ──────────────────────────────────────────────────
-const r2 = (n: number) => Math.round(n * 100) / 100
-
-const lineCalc = (line: Line) => {
-  const base = r2(line.quantity * line.unitPrice * (1 - line.discount / 100))
-  const igic = r2(base * (line.igicRate / 100))
-
-  return { base, igic, total: r2(base + igic) }
-}
-
-const subtotal = computed(() =>
-  r2(lines.value.reduce((s, l) => s + lineCalc(l).base, 0)),
-)
-
-const igicBreakdown = computed(() => {
-  const map = new Map<number, { base: number; amount: number }>()
-  for (const line of lines.value) {
-    const calc = lineCalc(line)
-    const prev = map.get(line.igicRate) ?? { base: 0, amount: 0 }
-
-    map.set(line.igicRate, { base: r2(prev.base + calc.base), amount: r2(prev.amount + calc.igic) })
-  }
-
-  return Array.from(map.entries())
-    .sort((a, b) => a[0] - b[0])
-    .map(([rate, v]) => ({ rate, ...v }))
-})
-
-const totalIgic = computed(() => r2(igicBreakdown.value.reduce((s, v) => s + v.amount, 0)))
-const total = computed(() => r2(subtotal.value + totalIgic.value))
+const onFilterChange = () => { page.value = 1 }
 
 // ─── Helpers UI ───────────────────────────────────────────────────────────────
 const eur = (n: number) =>
   new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(n || 0)
 
-const igicItems = IGIC_RATES.map(r => ({
-  title: `${r}% ${r === 0 ? '(Exento)' : r === 3 ? '(Superreducido)' : r === 7 ? '(Reducido)' : r === 9.5 ? '(General)' : r === 15 ? '(Incrementado)' : '(Tabaco)'}`,
-  value: r,
-}))
+const formatDate = (d: string) =>
+  d ? new Intl.DateTimeFormat('es-ES').format(new Date(d)) : '—'
 
-const typeItems = [
-  { title: 'Factura', value: 'invoice' },
-  { title: 'Factura rectificativa', value: 'credit_note' },
-  { title: 'Proforma', value: 'proforma' },
-  { title: 'Recibo', value: 'receipt' },
-]
-
-const statusItems = [
-  { title: 'Borrador', value: 'draft' },
-  { title: 'Enviada', value: 'sent' },
-]
-
-// ─── Cargar factura existente (modo edición) ──────────────────────────────────
-if (isEdit.value) {
-  const existing = await $fetch<any>(`/api/invoices/${params.id}`)
-
-  form.value = {
-    series: existing.series,
-    type: existing.type,
-    status: existing.status,
-    contactId: existing.contactId?._id || existing.contactId || '',
-    lawyerId: existing.lawyerId?._id || existing.lawyerId || '',
-    issuedAt: existing.issuedAt?.split('T')[0] || '',
-    dueDate: existing.dueDate?.split('T')[0] || '',
-    notes: existing.notes || '',
-    internalNotes: existing.internalNotes || '',
-  }
-
-  issuer.value = existing.issuer
-  client.value = existing.client
-  lines.value = existing.lines.map((l: any) => ({
-    description: l.description,
-    quantity: l.quantity,
-    unitPrice: l.unitPrice,
-    igicRate: l.igicRate,
-    discount: l.discount,
-  }))
+const statusConfig: Record<string, { label: string; color: string }> = {
+  draft: { label: 'Borrador', color: 'default' },
+  sent: { label: 'Enviada', color: 'info' },
+  paid: { label: 'Pagada', color: 'success' },
+  partial: { label: 'Pago parcial', color: 'warning' },
+  overdue: { label: 'Vencida', color: 'error' },
+  cancelled: { label: 'Cancelada', color: 'default' },
+  void: { label: 'Anulada', color: 'default' },
 }
 
-// ─── Guardar ──────────────────────────────────────────────────────────────────
-const save = async (redirectStatus?: 'draft' | 'sent') => {
-  errorMsg.value = ''
+const statusItems = [
+  { title: 'Todos los estados', value: '' },
+  ...Object.entries(statusConfig).map(([value, { label }]) => ({ title: label, value })),
+]
 
-  if (!client.value.name || !client.value.nif) {
-    errorMsg.value = 'El cliente es requerido'
+// ─── Acciones ─────────────────────────────────────────────────────────────────
+const loadingAction = ref<string | null>(null)
 
-    return
-  }
-
-  if (lines.value.some(l => !l.description)) {
-    errorMsg.value = 'Todas las líneas deben tener descripción'
-
-    return
-  }
-
-  loading.value = true
-
+const downloadPdf = async (invoice: any) => {
+  loadingAction.value = `pdf-${invoice._id}`
   try {
-    const body = {
-      ...form.value,
-      status: redirectStatus || form.value.status,
-      issuer: issuer.value,
-      client: client.value,
-      lines: lines.value,
-    }
+    const blob = await $fetch<Blob>(`/api/invoices/${invoice._id}/pdf`, { responseType: 'blob' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
 
-    if (isEdit.value) {
-      await $fetch(`/api/invoices/${params.id}`, { method: 'PUT', body })
-      await route.push('/billing')
-    }
-    else {
-      const created = await $fetch<any>('/api/invoices', { method: 'POST', body })
-
-      await route.push(`/billing/${created._id}`)
-    }
+    a.href = url
+    a.download = `${invoice.number}.pdf`
+    a.click()
+    URL.revokeObjectURL(url)
   }
   catch (e: any) {
-    errorMsg.value = e?.data?.message || 'Error al guardar la factura'
+    console.error('Error descargando PDF:', e)
   }
   finally {
-    loading.value = false
+    loadingAction.value = null
+  }
+}
+
+const sendInvoice = async (invoice: any) => {
+  if (!invoice.client?.email) {
+    alert('El cliente no tiene email registrado')
+
+    return
+  }
+
+  const confirmed = await swalConfirmation({
+    title: '¿Enviar factura?',
+    text: `Se enviará la factura ${invoice.number} a ${invoice.client.email}`,
+    icon: 'question',
+  })
+
+  if (!confirmed)
+    return
+
+  loadingAction.value = `send-${invoice._id}`
+  try {
+    await $fetch(`/api/invoices/${invoice._id}/send`, { method: 'POST' })
+    await refresh()
+  }
+  catch (e: any) {
+    console.error('Error enviando factura:', e)
+  }
+  finally {
+    loadingAction.value = null
+  }
+}
+
+const cancelInvoice = async (invoice: any) => {
+  const confirmed = await swalConfirmation({
+    title: '¿Cancelar factura?',
+    text: `¿Estás seguro de cancelar la factura ${invoice.number}? Esta acción no se puede deshacer.`,
+    icon: 'warning',
+  })
+
+  if (!confirmed)
+    return
+
+  loadingAction.value = `cancel-${invoice._id}`
+  try {
+    await $fetch(`/api/invoices/${invoice._id}`, { method: 'DELETE' })
+    await refresh()
+  }
+  catch (e: any) {
+    console.error('Error cancelando factura:', e)
+  }
+  finally {
+    loadingAction.value = null
   }
 }
 </script>
@@ -233,562 +147,351 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
   <div>
     <!-- Header -->
     <div class="d-flex align-center justify-space-between mb-6">
-      <div class="d-flex align-center gap-3">
-        <VBtn
-          icon="tabler-arrow-left"
-          variant="text"
-          size="small"
-          @click="$router.push('/billing')"
-        />
-        <h4 class="text-h4">
-          {{ isEdit ? 'Editar factura' : 'Nueva factura' }}
-        </h4>
-      </div>
-
-      <div class="d-flex gap-3">
-        <VBtn
-          variant="outlined"
-          color="secondary"
-          :disabled="loading"
-          @click="$router.push('/billing')"
-        >
-          Cancelar
-        </VBtn>
-        <VBtn
-          variant="outlined"
-          color="primary"
-          :loading="loading"
-          @click="save('draft')"
-        >
-          Guardar borrador
-        </VBtn>
-        <VBtn
-          color="primary"
-          :loading="loading"
-          prepend-icon="tabler-send"
-          @click="save('sent')"
-        >
-          Guardar y enviar
-        </VBtn>
-      </div>
+      <h4 class="text-h4">
+        Facturación
+      </h4>
+      <VBtn
+        color="primary"
+        prepend-icon="tabler-plus"
+        to="/billing/new"
+      >
+        Nueva factura
+      </VBtn>
     </div>
 
-    <!-- Error global -->
-    <VAlert
-      v-if="errorMsg"
-      type="error"
-      density="compact"
-      class="mb-4"
-      closable
-      @click:close="errorMsg = ''"
-    >
-      {{ errorMsg }}
-    </VAlert>
-
-    <VRow>
-      <!-- ── Columna principal ── -->
+    <!-- KPIs -->
+    <VRow class="mb-6">
       <VCol
         cols="12"
-        md="8"
+        sm="6"
+        lg="3"
       >
-        <!-- Datos generales -->
-        <VCard class="mb-6">
-          <VCardTitle class="pa-6 pb-2">
-            Datos de la factura
-          </VCardTitle>
-          <VCardText>
-            <VRow>
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <AppTextField
-                  v-model="form.series"
-                  label="Serie"
-                  placeholder="F"
-                  hint="1-3 letras"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <AppSelect
-                  v-model="form.type"
-                  label="Tipo"
-                  :items="typeItems"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <AppSelect
-                  v-model="form.status"
-                  label="Estado"
-                  :items="statusItems"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <AppTextField
-                  v-model="form.issuedAt"
-                  label="Fecha de emisión"
-                  type="date"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <AppTextField
-                  v-model="form.dueDate"
-                  label="Fecha de vencimiento"
-                  type="date"
-                />
-              </VCol>
-            </VRow>
-          </VCardText>
-        </VCard>
-
-        <!-- Emisor -->
-        <VCard class="mb-6">
-          <VCardTitle class="pa-6 pb-2">
-            Emisor
-          </VCardTitle>
-          <VCardText>
-            <VRow>
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <AppTextField
-                  v-model="issuer.name"
-                  label="Nombre / Razón social"
-                  placeholder="Despacho Jurídico S.L."
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <AppTextField
-                  v-model="issuer.nif"
-                  label="NIF / CIF"
-                  placeholder="B12345678"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <AppTextField
-                  v-model="issuer.email"
-                  label="Email"
-                  placeholder="info@despacho.com"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <AppTextField
-                  v-model="issuer.phone"
-                  label="Teléfono"
-                  placeholder="+34 928 000 000"
-                />
-              </VCol>
-              <VCol cols="12">
-                <AppTextField
-                  v-model="issuer.address.street"
-                  label="Dirección"
-                  placeholder="Calle Mayor, 1"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <AppTextField
-                  v-model="issuer.address.zip"
-                  label="C.P."
-                  placeholder="35001"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <AppTextField
-                  v-model="issuer.address.city"
-                  label="Localidad"
-                  placeholder="Las Palmas de G.C."
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <AppTextField
-                  v-model="issuer.address.island"
-                  label="Isla"
-                  placeholder="Gran Canaria"
-                />
-              </VCol>
-            </VRow>
-          </VCardText>
-        </VCard>
-
-        <!-- Cliente -->
-        <VCard class="mb-6">
-          <VCardTitle class="pa-6 pb-2">
-            Cliente
-          </VCardTitle>
-          <VCardText>
-            <!-- Selector de contacto existente -->
-            <AppSelect
-              v-model="form.contactId"
-              label="Buscar contacto existente (opcional)"
-              placeholder="Selecciona un contacto"
-              :items="(contacts as any[]).map((c: any) => ({ title: c.name, value: c._id }))"
-              clearable
-              class="mb-4"
-              @update:model-value="onContactChange"
-            />
-
-            <VDivider class="mb-4">
-              <span class="text-body-2 text-disabled">o introduce manualmente</span>
-            </VDivider>
-
-            <VRow>
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <AppTextField
-                  v-model="client.name"
-                  label="Nombre / Razón social *"
-                  placeholder="Juan García López"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <AppTextField
-                  v-model="client.nif"
-                  label="NIF / CIF *"
-                  placeholder="12345678Z"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <AppTextField
-                  v-model="client.email"
-                  label="Email"
-                  placeholder="cliente@email.com"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <AppTextField
-                  v-model="client.phone"
-                  label="Teléfono"
-                  placeholder="+34 600 000 000"
-                />
-              </VCol>
-              <VCol cols="12">
-                <AppTextField
-                  v-model="client.address.street"
-                  label="Dirección"
-                  placeholder="Calle Ejemplo, 10"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <AppTextField
-                  v-model="client.address.zip"
-                  label="C.P."
-                  placeholder="35001"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <AppTextField
-                  v-model="client.address.city"
-                  label="Localidad"
-                  placeholder="Las Palmas de G.C."
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <AppTextField
-                  v-model="client.address.island"
-                  label="Isla"
-                  placeholder="Gran Canaria"
-                />
-              </VCol>
-            </VRow>
-          </VCardText>
-        </VCard>
-
-        <!-- Líneas -->
-        <VCard class="mb-6">
-          <VCardTitle class="pa-6 pb-2 d-flex align-center justify-space-between">
-            <span>Líneas de factura</span>
-            <VBtn
-              size="small"
-              variant="tonal"
+        <VCard>
+          <VCardText class="d-flex align-center gap-4">
+            <VAvatar
               color="primary"
-              prepend-icon="tabler-plus"
-              @click="addLine"
+              variant="tonal"
+              size="48"
             >
-              Añadir línea
-            </VBtn>
-          </VCardTitle>
-          <VCardText class="pa-0">
-            <!-- Cabecera tabla -->
-            <div class="invoice-line-header d-none d-md-grid px-6 py-2">
-              <span>Descripción</span>
-              <span class="text-center">Cant.</span>
-              <span class="text-center">Precio</span>
-              <span class="text-center">Dto. %</span>
-              <span class="text-center">IGIC</span>
-              <span class="text-end">Total</span>
-              <span />
+              <VIcon icon="tabler-file-invoice" />
+            </VAvatar>
+            <div>
+              <p class="text-body-2 text-disabled mb-0">
+                Total facturado
+              </p>
+              <h5 class="text-h5">
+                {{ eur(stats.totalIssued) }}
+              </h5>
             </div>
-
-            <VDivider />
-
-            <div
-              v-for="(line, i) in lines"
-              :key="i"
-            >
-              <div class="invoice-line-row px-6 py-4">
-                <!-- Descripción -->
-                <AppTextField
-                  v-model="line.description"
-                  placeholder="Descripción del servicio"
-                  density="compact"
-                  hide-details
-                />
-
-                <!-- Cantidad -->
-                <AppTextField
-                  v-model.number="line.quantity"
-                  type="number"
-                  density="compact"
-                  hide-details
-                  min="0"
-                  class="text-center"
-                />
-
-                <!-- Precio -->
-                <AppTextField
-                  v-model.number="line.unitPrice"
-                  type="number"
-                  density="compact"
-                  hide-details
-                  min="0"
-                  step="0.01"
-                  prefix="€"
-                />
-
-                <!-- Descuento -->
-                <AppTextField
-                  v-model.number="line.discount"
-                  type="number"
-                  density="compact"
-                  hide-details
-                  min="0"
-                  max="100"
-                  suffix="%"
-                />
-
-                <!-- IGIC -->
-                <AppSelect
-                  v-model="line.igicRate"
-                  :items="igicItems"
-                  density="compact"
-                  hide-details
-                />
-
-                <!-- Total línea -->
-                <div class="text-end d-flex align-center justify-end">
-                  <span class="font-weight-semibold">{{ eur(lineCalc(line).total) }}</span>
-                </div>
-
-                <!-- Eliminar -->
-                <div class="d-flex align-center justify-center">
-                  <VBtn
-                    icon="tabler-trash"
-                    variant="text"
-                    color="error"
-                    size="small"
-                    :disabled="lines.length === 1"
-                    @click="removeLine(i)"
-                  />
-                </div>
-              </div>
-              <VDivider v-if="i < lines.length - 1" />
-            </div>
-          </VCardText>
-        </VCard>
-
-        <!-- Notas -->
-        <VCard class="mb-6">
-          <VCardTitle class="pa-6 pb-2">
-            Notas
-          </VCardTitle>
-          <VCardText>
-            <VRow>
-              <VCol cols="12">
-                <AppTextarea
-                  v-model="form.notes"
-                  label="Notas visibles en la factura"
-                  placeholder="Forma de pago, condiciones, agradecimiento..."
-                  rows="3"
-                />
-              </VCol>
-              <VCol cols="12">
-                <AppTextarea
-                  v-model="form.internalNotes"
-                  label="Notas internas (no visibles en la factura)"
-                  placeholder="Comentarios internos del equipo..."
-                  rows="2"
-                />
-              </VCol>
-            </VRow>
           </VCardText>
         </VCard>
       </VCol>
 
-      <!-- ── Columna lateral ── -->
       <VCol
         cols="12"
-        md="4"
+        sm="6"
+        lg="3"
       >
-        <!-- Asignación -->
-        <VCard class="mb-6">
-          <VCardTitle class="pa-6 pb-2">
-            Asignación
-          </VCardTitle>
-          <VCardText>
-            <AppSelect
-              v-model="form.lawyerId"
-              label="Abogado responsable"
-              placeholder="Seleccionar abogado"
-              :items="(lawyers as any[]).map((l: any) => ({ title: l.name, value: l._id }))"
-              clearable
-              class="mb-4"
-            />
-          </VCardText>
-        </VCard>
-
-        <!-- Resumen de totales -->
-        <VCard class="mb-6">
-          <VCardTitle class="pa-6 pb-2">
-            Resumen
-          </VCardTitle>
-          <VCardText class="pa-0">
-            <div class="px-6 py-3 d-flex justify-space-between">
-              <span class="text-body-2 text-disabled">Base imponible</span>
-              <span class="font-weight-medium">{{ eur(subtotal) }}</span>
-            </div>
-
-            <VDivider />
-
-            <!-- Desglose IGIC -->
-            <div
-              v-for="row in igicBreakdown"
-              :key="row.rate"
-              class="px-6 py-2 d-flex justify-space-between"
-            >
-              <span class="text-body-2 text-disabled">IGIC {{ row.rate }}%</span>
-              <span class="text-body-2">{{ eur(row.amount) }}</span>
-            </div>
-
-            <VDivider />
-
-            <div class="px-6 py-4 d-flex justify-space-between align-center">
-              <span class="text-h6 font-weight-bold">Total</span>
-              <span class="text-h6 font-weight-bold text-primary">{{ eur(total) }}</span>
-            </div>
-          </VCardText>
-        </VCard>
-
-        <!-- Acciones rápidas -->
         <VCard>
-          <VCardText class="d-flex flex-column gap-3">
-            <VBtn
-              block
-              color="primary"
-              :loading="loading"
-              prepend-icon="tabler-send"
-              @click="save('sent')"
+          <VCardText class="d-flex align-center gap-4">
+            <VAvatar
+              color="success"
+              variant="tonal"
+              size="48"
             >
-              Guardar y enviar
-            </VBtn>
-            <VBtn
-              block
-              variant="outlined"
-              color="primary"
-              :loading="loading"
-              prepend-icon="tabler-device-floppy"
-              @click="save('draft')"
+              <VIcon icon="tabler-circle-check" />
+            </VAvatar>
+            <div>
+              <p class="text-body-2 text-disabled mb-0">
+                Cobrado
+              </p>
+              <h5 class="text-h5">
+                {{ eur(stats.totalPaid) }}
+              </h5>
+            </div>
+          </VCardText>
+        </VCard>
+      </VCol>
+
+      <VCol
+        cols="12"
+        sm="6"
+        lg="3"
+      >
+        <VCard>
+          <VCardText class="d-flex align-center gap-4">
+            <VAvatar
+              color="warning"
+              variant="tonal"
+              size="48"
             >
-              Guardar borrador
-            </VBtn>
-            <VBtn
-              block
-              variant="text"
-              color="secondary"
-              @click="$router.push('/billing')"
+              <VIcon icon="tabler-clock" />
+            </VAvatar>
+            <div>
+              <p class="text-body-2 text-disabled mb-0">
+                Pendiente
+              </p>
+              <h5 class="text-h5">
+                {{ eur(stats.totalPending) }}
+              </h5>
+            </div>
+          </VCardText>
+        </VCard>
+      </VCol>
+
+      <VCol
+        cols="12"
+        sm="6"
+        lg="3"
+      >
+        <VCard>
+          <VCardText class="d-flex align-center gap-4">
+            <VAvatar
+              color="error"
+              variant="tonal"
+              size="48"
             >
-              Cancelar
-            </VBtn>
+              <VIcon icon="tabler-alert-circle" />
+            </VAvatar>
+            <div>
+              <p class="text-body-2 text-disabled mb-0">
+                Vencido
+              </p>
+              <h5 class="text-h5">
+                {{ eur(stats.totalOverdue) }}
+              </h5>
+            </div>
           </VCardText>
         </VCard>
       </VCol>
     </VRow>
+
+    <!-- Filtros -->
+    <VCard class="mb-6">
+      <VCardText>
+        <VRow>
+          <VCol
+            cols="12"
+            sm="4"
+          >
+            <AppTextField
+              :model-value="search"
+              label="Buscar"
+              placeholder="Número, cliente, NIF..."
+              prepend-inner-icon="tabler-search"
+              clearable
+              @update:model-value="onSearch"
+            />
+          </VCol>
+          <VCol
+            cols="12"
+            sm="3"
+          >
+            <AppSelect
+              v-model="status"
+              label="Estado"
+              :items="statusItems"
+              @update:model-value="onFilterChange"
+            />
+          </VCol>
+          <VCol
+            cols="12"
+            sm="2"
+          >
+            <AppTextField
+              v-model="dateFrom"
+              label="Desde"
+              type="date"
+              @update:model-value="onFilterChange"
+            />
+          </VCol>
+          <VCol
+            cols="12"
+            sm="2"
+          >
+            <AppTextField
+              v-model="dateTo"
+              label="Hasta"
+              type="date"
+              @update:model-value="onFilterChange"
+            />
+          </VCol>
+          <VCol
+            cols="12"
+            sm="1"
+            class="d-flex align-end"
+          >
+            <VBtn
+              variant="outlined"
+              color="secondary"
+              icon="tabler-refresh"
+              @click="() => { search = ''; status = ''; dateFrom = ''; dateTo = ''; page = 1 }"
+            />
+          </VCol>
+        </VRow>
+      </VCardText>
+    </VCard>
+
+    <!-- Tabla -->
+    <VCard>
+      <VCardText class="pa-0">
+        <!-- Loading -->
+        <div
+          v-if="pending"
+          class="d-flex justify-center pa-10"
+        >
+          <VProgressCircular
+            indeterminate
+            color="primary"
+          />
+        </div>
+
+        <!-- Sin resultados -->
+        <div
+          v-else-if="!invoices.length"
+          class="text-center text-disabled pa-10"
+        >
+          <VIcon
+            icon="tabler-file-off"
+            size="48"
+            class="mb-3"
+          />
+          <p class="mb-0">
+            No hay facturas
+          </p>
+        </div>
+
+        <!-- Lista -->
+        <VTable v-else>
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Vencimiento</th>
+              <th class="text-end">
+                Importe
+              </th>
+              <th class="text-end">
+                Pendiente
+              </th>
+              <th>Estado</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="invoice in invoices"
+              :key="invoice._id"
+              style="cursor: pointer;"
+              @click="$router.push(`/billing/${invoice._id}`)"
+            >
+              <td>
+                <span class="font-weight-semibold">{{ invoice.number }}</span>
+              </td>
+              <td>
+                <div>
+                  <p class="mb-0 font-weight-medium">
+                    {{ invoice.client?.name }}
+                  </p>
+                  <p class="text-body-2 text-disabled mb-0">
+                    {{ invoice.client?.nif }}
+                  </p>
+                </div>
+              </td>
+              <td>{{ formatDate(invoice.issuedAt) }}</td>
+              <td>
+                <span :class="invoice.status === 'overdue' ? 'text-error font-weight-semibold' : ''">
+                  {{ invoice.dueDate ? formatDate(invoice.dueDate) : '—' }}
+                </span>
+              </td>
+              <td class="text-end font-weight-semibold">
+                {{ eur(invoice.total) }}
+              </td>
+              <td class="text-end">
+                <span
+                  v-if="invoice.amountDue > 0"
+                  class="text-error font-weight-semibold"
+                >
+                  {{ eur(invoice.amountDue) }}
+                </span>
+                <span
+                  v-else
+                  class="text-success"
+                >
+                  Pagada
+                </span>
+              </td>
+              <td>
+                <VChip
+                  :color="statusConfig[invoice.status]?.color"
+                  size="small"
+                  label
+                >
+                  {{ statusConfig[invoice.status]?.label || invoice.status }}
+                </VChip>
+              </td>
+              <td @click.stop>
+                <VBtn
+                  icon
+                  variant="text"
+                  size="small"
+                >
+                  <VIcon icon="tabler-dots-vertical" />
+                  <VMenu activator="parent">
+                    <VList density="compact">
+                      <VListItem
+                        prepend-icon="tabler-eye"
+                        title="Ver detalle"
+                        :to="`/billing/${invoice._id}`"
+                      />
+                      <VListItem
+                        v-if="invoice.status === 'draft'"
+                        prepend-icon="tabler-edit"
+                        title="Editar"
+                        :to="`/billing/${invoice._id}/edit`"
+                      />
+                      <VListItem
+                        prepend-icon="tabler-download"
+                        title="Descargar PDF"
+                        :disabled="loadingAction === `pdf-${invoice._id}`"
+                        @click="downloadPdf(invoice)"
+                      />
+                      <VListItem
+                        v-if="['draft', 'sent', 'overdue', 'partial'].includes(invoice.status)"
+                        prepend-icon="tabler-send"
+                        title="Enviar por email"
+                        :disabled="loadingAction === `send-${invoice._id}`"
+                        @click="sendInvoice(invoice)"
+                      />
+                      <VDivider class="my-1" />
+                      <VListItem
+                        v-if="['draft', 'sent', 'partial'].includes(invoice.status)"
+                        prepend-icon="tabler-ban"
+                        title="Cancelar factura"
+                        class="text-error"
+                        @click="cancelInvoice(invoice)"
+                      />
+                    </VList>
+                  </VMenu>
+                </VBtn>
+              </td>
+            </tr>
+          </tbody>
+        </VTable>
+
+        <!-- Paginación -->
+        <div
+          v-if="meta.totalPages > 1"
+          class="d-flex justify-center pa-4"
+        >
+          <VPagination
+            v-model="page"
+            :length="meta.totalPages"
+            :total-visible="5"
+          />
+        </div>
+      </VCardText>
+    </VCard>
   </div>
 </template>
-
-<style scoped>
-.invoice-line-header {
-  display: grid;
-  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-  font-size: 12px;
-  font-weight: 600;
-  gap: 12px;
-  grid-template-columns: 1fr 80px 100px 80px 130px 90px 40px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.invoice-line-row {
-  display: grid;
-  align-items: center;
-  gap: 12px;
-  grid-template-columns: 1fr 80px 100px 80px 130px 90px 40px;
-}
-
-@media (max-width: 960px) {
-  .invoice-line-row {
-    gap: 12px;
-    grid-template-columns: 1fr 1fr;
-  }
-}
-</style>
