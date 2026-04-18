@@ -1,8 +1,5 @@
 <script setup lang="ts">
-// pages/billing/[id]/edit.vue
-// Reutiliza exactamente la misma lógica que new.vue
-// La diferencia es que params.id existe → modo edición activado
-import { IGIC_RATES } from '~/server/models/Invoice'
+import { IGIC_RATES } from '@/utils/igic'
 
 definePageMeta({
   middleware: ['auth'],
