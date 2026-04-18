@@ -25,6 +25,8 @@ export default defineNitroPlugin(async () => {
     await Specialty.init()
     await Lawyer.init()
     console.log('✅ Specialty y Lawyer ok')
+    await Invoice.init()
+    console.log('✅ Invoice ok')
     console.log('✅ Modelos inicializados')
   }
   catch (error) {
