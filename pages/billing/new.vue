@@ -33,9 +33,11 @@ const issuer = ref({
   address: { street: '', city: '', zip: '', island: '', province: '', country: 'ES' },
 })
 
-// Se carga desde settings cuando llegan los datos
-watch(settingsData, (val: any) => {
-  if (!val || isEdit.value)
+onMounted(() => {
+  if (isEdit.value)
+    return
+  const val = settingsData.value as any
+  if (!val)
     return
   issuer.value = {
     name: val.companyName || '',
@@ -52,7 +54,7 @@ watch(settingsData, (val: any) => {
       country: 'ES',
     },
   }
-}, { immediate: true })
+})
 
 // ─── Formulario principal ─────────────────────────────────────────────────────
 const form = ref({
