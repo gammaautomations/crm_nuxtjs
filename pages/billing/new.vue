@@ -14,6 +14,8 @@ const { data: contactsData } = await useFetch('/api/contacts?limit=200')
 const { data: lawyersData } = await useFetch('/api/lawyers')
 const { data: settingsData } = await useFetch('/api/settings')
 
+console.log('settings:', settingsData.value)
+
 const contacts = computed(() => (contactsData.value as any)?.data || contactsData.value || [])
 const lawyers = computed(() => lawyersData.value || [])
 
