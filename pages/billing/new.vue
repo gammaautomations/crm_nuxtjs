@@ -14,10 +14,10 @@ const { data: contactsData } = await useFetch('/api/contacts?limit=200')
 const { data: lawyersData } = await useFetch('/api/lawyers')
 const { data: settingsData } = await useFetch('/api/settings')
 
-console.log('settings:', settingsData.value)
-
 const contacts = computed(() => (contactsData.value as any)?.data || contactsData.value || [])
 const lawyers = computed(() => lawyersData.value || [])
+
+const s = settingsData.value as any
 
 // ─── Estado UI ────────────────────────────────────────────────────────────────
 const loading = ref(false)
@@ -25,35 +25,19 @@ const errorMsg = ref('')
 
 // ─── Emisor ───────────────────────────────────────────────────────────────────
 const issuer = ref({
-  name: '',
-  nif: '',
-  email: '',
-  phone: '',
-  cabildoReg: '',
-  address: { street: '', city: '', zip: '', island: '', province: '', country: 'ES' },
-})
-
-onMounted(() => {
-  if (isEdit.value)
-    return
-  const val = settingsData.value as any
-  if (!val)
-    return
-  issuer.value = {
-    name: val.companyName || '',
-    nif: val.companyNif || '',
-    email: val.companyEmail || '',
-    phone: val.companyPhone || '',
-    cabildoReg: val.cabildoReg || '',
-    address: {
-      street: val.companyAddress || '',
-      city: val.companyCity || '',
-      zip: val.companyZip || '',
-      island: val.companyIsland || '',
-      province: val.companyProvince || '',
-      country: 'ES',
-    },
-  }
+  name: s?.companyName || '',
+  nif: s?.companyNif || '',
+  email: s?.companyEmail || '',
+  phone: s?.companyPhone || '',
+  cabildoReg: s?.cabildoReg || '',
+  address: {
+    street: s?.companyAddress || '',
+    city: s?.companyCity || '',
+    zip: s?.companyZip || '',
+    island: s?.companyIsland || '',
+    province: s?.companyProvince || '',
+    country: 'ES',
+  },
 })
 
 // ─── Formulario principal ─────────────────────────────────────────────────────
@@ -383,7 +367,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="issuer.name"
                   label="Nombre / Razón social"
-                  placeholder="Despacho Jurídico S.L."
                 />
               </VCol>
               <VCol
@@ -393,7 +376,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="issuer.nif"
                   label="NIF / CIF"
-                  placeholder="B12345678"
                 />
               </VCol>
               <VCol
@@ -403,7 +385,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="issuer.email"
                   label="Email"
-                  placeholder="info@despacho.com"
                 />
               </VCol>
               <VCol
@@ -413,14 +394,12 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="issuer.phone"
                   label="Teléfono"
-                  placeholder="+34 928 000 000"
                 />
               </VCol>
               <VCol cols="12">
                 <AppTextField
                   v-model="issuer.address.street"
                   label="Dirección"
-                  placeholder="Calle Mayor, 1"
                 />
               </VCol>
               <VCol
@@ -430,7 +409,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="issuer.address.zip"
                   label="C.P."
-                  placeholder="35001"
                 />
               </VCol>
               <VCol
@@ -440,7 +418,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="issuer.address.city"
                   label="Localidad"
-                  placeholder="Las Palmas de G.C."
                 />
               </VCol>
               <VCol
@@ -450,7 +427,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="issuer.address.island"
                   label="Isla"
-                  placeholder="Gran Canaria"
                 />
               </VCol>
             </VRow>
@@ -463,7 +439,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
             Cliente
           </VCardTitle>
           <VCardText>
-            <!-- Selector de contacto existente -->
             <AppSelect
               v-model="form.contactId"
               label="Buscar contacto existente (opcional)"
@@ -486,7 +461,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="client.name"
                   label="Nombre / Razón social *"
-                  placeholder="Juan García López"
                 />
               </VCol>
               <VCol
@@ -496,7 +470,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="client.nif"
                   label="NIF / CIF *"
-                  placeholder="12345678Z"
                 />
               </VCol>
               <VCol
@@ -506,7 +479,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="client.email"
                   label="Email"
-                  placeholder="cliente@email.com"
                 />
               </VCol>
               <VCol
@@ -516,14 +488,12 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="client.phone"
                   label="Teléfono"
-                  placeholder="+34 600 000 000"
                 />
               </VCol>
               <VCol cols="12">
                 <AppTextField
                   v-model="client.address.street"
                   label="Dirección"
-                  placeholder="Calle Ejemplo, 10"
                 />
               </VCol>
               <VCol
@@ -533,7 +503,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="client.address.zip"
                   label="C.P."
-                  placeholder="35001"
                 />
               </VCol>
               <VCol
@@ -543,7 +512,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="client.address.city"
                   label="Localidad"
-                  placeholder="Las Palmas de G.C."
                 />
               </VCol>
               <VCol
@@ -553,7 +521,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextField
                   v-model="client.address.island"
                   label="Isla"
-                  placeholder="Gran Canaria"
                 />
               </VCol>
             </VRow>
@@ -575,7 +542,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
             </VBtn>
           </VCardTitle>
           <VCardText class="pa-0">
-            <!-- Cabecera tabla -->
             <div class="invoice-line-header d-none d-md-grid px-6 py-2">
               <span>Descripción</span>
               <span class="text-center">Cant.</span>
@@ -593,25 +559,19 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
               :key="i"
             >
               <div class="invoice-line-row px-6 py-4">
-                <!-- Descripción -->
                 <AppTextField
                   v-model="line.description"
                   placeholder="Descripción del servicio"
                   density="compact"
                   hide-details
                 />
-
-                <!-- Cantidad -->
                 <AppTextField
                   v-model.number="line.quantity"
                   type="number"
                   density="compact"
                   hide-details
                   min="0"
-                  class="text-center"
                 />
-
-                <!-- Precio -->
                 <AppTextField
                   v-model.number="line.unitPrice"
                   type="number"
@@ -621,8 +581,6 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                   step="0.01"
                   prefix="€"
                 />
-
-                <!-- Descuento -->
                 <AppTextField
                   v-model.number="line.discount"
                   type="number"
@@ -632,21 +590,15 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                   max="100"
                   suffix="%"
                 />
-
-                <!-- IGIC -->
                 <AppSelect
                   v-model="line.igicRate"
                   :items="igicItems"
                   density="compact"
                   hide-details
                 />
-
-                <!-- Total línea -->
                 <div class="text-end d-flex align-center justify-end">
                   <span class="font-weight-semibold">{{ eur(lineCalc(line).total) }}</span>
                 </div>
-
-                <!-- Eliminar -->
                 <div class="d-flex align-center justify-center">
                   <VBtn
                     icon="tabler-trash"
@@ -674,15 +626,14 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
                 <AppTextarea
                   v-model="form.notes"
                   label="Notas visibles en la factura"
-                  placeholder="Forma de pago, condiciones, agradecimiento..."
+                  placeholder="Forma de pago, condiciones..."
                   rows="3"
                 />
               </VCol>
               <VCol cols="12">
                 <AppTextarea
                   v-model="form.internalNotes"
-                  label="Notas internas (no visibles en la factura)"
-                  placeholder="Comentarios internos del equipo..."
+                  label="Notas internas"
                   rows="2"
                 />
               </VCol>
@@ -708,12 +659,11 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
               placeholder="Seleccionar abogado"
               :items="(lawyers as any[]).map((l: any) => ({ title: l.name, value: l._id }))"
               clearable
-              class="mb-4"
             />
           </VCardText>
         </VCard>
 
-        <!-- Resumen de totales -->
+        <!-- Resumen -->
         <VCard class="mb-6">
           <VCardTitle class="pa-6 pb-2">
             Resumen
@@ -723,10 +673,7 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
               <span class="text-body-2 text-disabled">Base imponible</span>
               <span class="font-weight-medium">{{ eur(subtotal) }}</span>
             </div>
-
             <VDivider />
-
-            <!-- Desglose IGIC -->
             <div
               v-for="row in igicBreakdown"
               :key="row.rate"
@@ -735,9 +682,7 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
               <span class="text-body-2 text-disabled">IGIC {{ row.rate }}%</span>
               <span class="text-body-2">{{ eur(row.amount) }}</span>
             </div>
-
             <VDivider />
-
             <div class="px-6 py-4 d-flex justify-space-between align-center">
               <span class="text-h6 font-weight-bold">Total</span>
               <span class="text-h6 font-weight-bold text-primary">{{ eur(total) }}</span>
@@ -745,7 +690,7 @@ const save = async (redirectStatus?: 'draft' | 'sent') => {
           </VCardText>
         </VCard>
 
-        <!-- Acciones rápidas -->
+        <!-- Acciones -->
         <VCard>
           <VCardText class="d-flex flex-column gap-3">
             <VBtn
