@@ -53,6 +53,14 @@ const getNavItems = () => {
 
   if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
     items.push({
+      title: 'Calendario',
+      to: { name: 'calendar' },
+      icon: { icon: 'tabler-calendar' },
+    })
+  }
+
+  if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
+    items.push({
       title: 'Facturación',
       to: { name: 'billing' },
       icon: { icon: 'tabler-file-invoice' },

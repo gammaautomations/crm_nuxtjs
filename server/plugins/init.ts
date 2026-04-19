@@ -1,3 +1,4 @@
+import Appointment from '~/server/models/Appointment'
 import { Contact } from '~/server/models/Contact'
 import { GeneralSetting } from '~/server/models/GeneralSetting'
 import Invoice from '~/server/models/Invoice'
@@ -28,6 +29,9 @@ export default defineNitroPlugin(async () => {
     console.log('✅ Specialty y Lawyer ok')
     await Invoice.init()
     console.log('✅ Invoice ok')
+    await Appointment.init()
+    console.log('✅ Appointment ok')
+
     console.log('✅ Modelos inicializados')
   }
   catch (error) {
