@@ -367,7 +367,7 @@ const save = async () => {
             <AppSelect
               v-model="form.leadId"
               label="Lead relacionado"
-              :items="(leads as any[]).map((l: any) => ({ title: l.title || l.name, value: l._id }))"
+              :items="(leads as any[]).map((l: any) => ({ title: l.nombre || l.area || l._id, value: l._id }))"
               clearable
             />
           </VCardText>
