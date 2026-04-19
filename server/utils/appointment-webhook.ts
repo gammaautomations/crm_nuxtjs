@@ -45,7 +45,7 @@ export const sendAppointmentWebhook = async (
   }
 
   try {
-    const res = await fetch(`${webhookUrl}/calendar`, {
+    const res = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

@@ -178,6 +178,8 @@ export default defineNuxtConfig({
     mailUser: process.env.NUXT_MAIL_USER,
     mailPass: process.env.NUXT_MAIL_PASS,
     mailFrom: process.env.NUXT_MAIL_FROM,
+    n8nCalendarWebhookUrl: process.env.N8N_CALENDAR_WEBHOOK_URL,
+    n8nSecretToken: process.env.N8N_SECRET_TOKEN,
     public: {
       appUrl: process.env.APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
