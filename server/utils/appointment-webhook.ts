@@ -33,6 +33,7 @@ export const sendAppointmentWebhook = async (
       meetUrl: appointment.meetUrl,
       reminderMinutes: appointment.reminderMinutes,
       color: appointment.color,
+      googleEventId: appointment.googleEventId, // ← añadir esto
     },
 
     // n8n puede usar estos IDs para buscar más info si necesita
