@@ -18,6 +18,9 @@ export default defineEventHandler(async event => {
     ...dto,
     startAt: dto.startAt ? new Date(dto.startAt) : appointment.startAt,
     endAt: dto.endAt ? new Date(dto.endAt) : appointment.endAt,
+    contactId: dto.contactId || undefined, // ← añadir
+    leadId: dto.leadId || undefined, // ← añadir
+    lawyerId: dto.lawyerId || undefined,
     updatedBy: user.id,
   })
 
