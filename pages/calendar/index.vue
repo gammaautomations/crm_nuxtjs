@@ -18,12 +18,7 @@ const { data: lawyersData } = await useFetch('/api/lawyers')
 const { data: contactsData } = await useFetch('/api/contacts?limit=200')
 
 const lawyers = computed(() => lawyersData.value || [])
-
-const contacts = computed(() => {
-  console.log('contactsData:', contactsData.value)
-
-  return (contactsData.value as any)?.data || contactsData.value || []
-})
+const contacts = computed(() => (contactsData.value as any)?.data || contactsData.value || [])
 
 // ─── Estado ───────────────────────────────────────────────────────────────────
 const calendarRef = ref()
@@ -417,7 +412,7 @@ const deleteAppointment = async () => {
               <AppSelect
                 v-model="form.contactId"
                 label="Cliente / Contacto"
-                :items="(contacts as any[]).map((c: any) => ({ title: c.name, value: c._id }))"
+                :items="(contacts as any[]).map((c: any) => ({ title: c.fullName || c.name, value: c._id }))"
                 clearable
               />
             </VCol>
