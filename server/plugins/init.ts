@@ -4,6 +4,7 @@ import { GeneralSetting } from '~/server/models/GeneralSetting'
 import Invoice from '~/server/models/Invoice'
 import { Lawyer } from '~/server/models/Lawyer'
 import { Lead } from '~/server/models/Lead'
+import LegalCase from '~/server/models/LegalCase '
 import { Notification } from '~/server/models/Notification'
 import { Specialty } from '~/server/models/Specialty'
 import { User } from '~/server/models/User'
@@ -29,6 +30,8 @@ export default defineNitroPlugin(async () => {
     console.log('✅ Specialty y Lawyer ok')
     await Invoice.init()
     console.log('✅ Invoice ok')
+    await LegalCase.init()
+    console.log('✅ Case ok')
     await Appointment.init()
     console.log('✅ Appointment ok')
 

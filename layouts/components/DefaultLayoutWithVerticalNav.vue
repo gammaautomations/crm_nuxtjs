@@ -61,6 +61,14 @@ const getNavItems = () => {
 
   if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
     items.push({
+      title: 'Expedientes',
+      to: { name: 'cases' },
+      icon: { icon: 'tabler-folder' },
+    })
+  }
+
+  if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
+    items.push({
       title: 'Facturación',
       to: { name: 'billing' },
       icon: { icon: 'tabler-file-invoice' },
