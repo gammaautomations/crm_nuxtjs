@@ -14,6 +14,9 @@ export default defineEventHandler(async event => {
     startAt: new Date(dto.startAt),
     endAt: new Date(dto.endAt),
     createdBy: user.id,
+    contactId: dto.contactId || undefined,
+    leadId: dto.leadId || undefined,
+    lawyerId: dto.lawyerId || undefined,
   })
 
   // Disparar webhook n8n de forma asíncrona (no bloquea la respuesta)
