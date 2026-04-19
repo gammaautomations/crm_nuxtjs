@@ -1,0 +1,130 @@
+[33m9727fcf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m feat: calendario - 5
+[33md87f8b6[m feat: calendario - 4
+[33mea1c666[m feat: calendario - 2
+[33m51dd40e[m feat: calendario - 1
+[33md4f901f[m feat: calendario
+[33m9c74383[m feat: proteger rutas api
+[33ma7cf7cf[m feat: datos de empresa en configuración para facturación - 7
+[33m6b4cc08[m feat: datos de empresa en configuración para facturación - 6
+[33m24583eb[m feat: datos de empresa en configuración para facturación - 5
+[33m8275230[m feat: datos de empresa en configuración para facturación - 4
+[33mdf6ba7d[m feat: datos de empresa en configuración para facturación - 3
+[33m4cd4027[m feat: datos de empresa en configuración para facturación - 2
+[33m1d0da56[m feat: datos de empresa en configuración para facturación - 1
+[33m1fefbfa[m feat: datos de empresa en configuración para facturación
+[33mf189b5d[m feat: módulo de facturación con IGIC - 5
+[33m68ad728[m feat: módulo de facturación con IGIC - 4
+[33m8457fcb[m feat: módulo de facturación con IGIC - 3
+[33ma767779[m feat: módulo de facturación con IGIC - 2
+[33m951b7de[m feat: módulo de facturación con IGIC - 1
+[33m581d38d[m feat: módulo de facturación con IGIC
+[33m57d7078[m feat: lawyer stats link in nav
+[33m986f37e[m feat: comments in lead detail
+[33m74b48fa[m refactor: clean up model registration
+[33mf51168f[m fix: register User model in init plugin
+[33ma521636[m fix: force User model registration
+[33m4b1bcd9[m feat: email on lead assignment
+[33m7b8623d[m feat: email notification on lead assignment
+[33m0ae1b6f[m feat: lead detail improvements
+[33m7bc03b9[m fix: restore layout with global search
+[33m43bbe02[m feat: global search component
+[33m21ea123[m fix: AppBarSearch import with @core alias
+[33m678be02[m feat: global search in navbar
+[33mc8668de[m fix: use UserSessionsPanel component
+[33m71b6fd5[m feat: user sessions in profile
+[33m2589e69[m feat: capture ip and browser on login
+[33mc9a8d7a[m feat: profile link in nav
+[33m603b4dc[m feat: maintenance mode
+[33mbb0ce47[m feat: filter leads by lawyer
+[33m6b7417e[m feat: lead activity history
+[33me7157f7[m feat: dashboard auto refresh
+[33mb06f127[m feat: export contacts to xlsx
+[33m6f9fa79[m feat: export leads to excel
+[33mbc0d674[m feat: role-based navigation menu
+[33mab8e114[m feat: table view for users
+[33m59ed548[m feat: create user from admin
+[33m83e5c13[m feat: user search filter
+[33m4579d92[m fix: move users page to admin
+[33m35acdab[m feat: users management page
+[33mf0d1b4c[m fix: remove unused appTitle - 1
+[33mbd60fc0[m fix: dynamic title in vertical nav
+[33me46b5fd[m fix: dynamic title in vertical nav
+[33m3bf8767[m fix: remove unused appTitle
+[33m5d264b9[m feat: dynamic app name from settings
+[33m7d2873e[m feat: Nombre de la app - 1
+[33mb929574[m feat: Nombre de la app
+[33m70dabf5[m feat: lead badge in nav
+[33m0f20116[m fix: remove duplicate script tag
+[33meb7346b[m fix: clean up auth plugin and nav - 4
+[33m30abe07[m fix: revert nav items
+[33m7bff5ed[m fix: clean up auth plugin and nav - 3
+[33mba36a00[m fix: clean up auth plugin and nav
+[33mbe36afc[m fix: badge content empty string - 1
+[33m66050a2[m fix: badge content empty string
+[33m7a1e2f9[m feat: dynamic lead badge in nav - 1
+[33m31709c6[m feat: dynamic lead badge in nav
+[33m393710c[m fix: active nav primary color
+[33m7890f56[m fix: active nav icon and text white
+[33m72b0525[m fix: active nav icon color v-icon
+[33m5ab198d[m fix: active nav icon color blue
+[33mbf01ceb[m fix: active nav icon color
+[33m0e6b89c[m fix: active nav link color blue
+[33mea6c15b[m fix: active nav link color
+[33m58d9913[m fix: active nav link color
+[33mfca7cf4[m fix: move styles to correct file
+[33m7cc1e3f[m fix: active nav link text color
+[33m35e9e93[m feat: update navigation menu
+[33m248edeb[m feat: new lead sound and auto refresh
+[33m71b9f01[m feat: dashboard with stats
+[33m0288832[m feat: lead detail page
+[33m51f8a9f[m feat: score colors in kanban cards
+[33m3c9ddf2[m fix: hide kanban scrollbar
+[33m0ba2fcd[m feat: kanban leads with drag and drop
+[33m4d77d44[m fix: populate assignedLawyer in leads
+[33mf0d6259[m debug: log assignedLawyer
+[33m7aff1e0[m feat: assign lawyer to lead
+[33m62a406b[m fix: add assignedLawyer to Lead model
+[33m3afbc48[m fix: populate assignedLawyer in leads list
+[33mf0c655a[m fix - leads
+[33m667cf2b[m feat: leads list with lawyer assignment
+[33mb9484f2[m fix: specialties null check - 3
+[33mbf4a9e4[m fix: specialties null check - 2
+[33m8cb073e[m fix: specialties null check - 1
+[33m5bd1e28[m fix: specialties null check
+[33m380b0e2[m fix: move lawyers and specialties to admin
+[33m3f34ba9[m fix: route rules ssr
+[33m336b78d[m fix: nitro plugin spa fallback
+[33m2bb9bf1[m fix: serve index.html for spa routes - 1
+[33m2e4330e[m fix: serve index.html for spa routes
+[33me352a3d[m fix: spa routing nitro
+[33m655e21b[m fix: revert to node server
+[33me2b585a[m fix: nginx spa routing
+[33ma76ebb9[m fix: nginx spa routing
+[33m46f7ae7[m feat: lawyers and specialties module
+[33m74771fb[m feat: leads model modificados
+[33maaf5018[m feat: leads model and api
+[33m01db5e9[m fix: explicit ssr false
+[33me8c2b74[m fix: catch errors in init plugin
+[33m4e32d6a[m fix: catch errors in init plugin
+[33m25d228a[m fix: favicon relative path
+[33m6be9403[m fix: middleware only on client
+[33mdf1d0e7[m fix: trust proxy and production config
+[33mc802c55[m fix: run build:icons before build
+[33m06e175a[m fix: ignore scripts during install
+[33m39053c8[m fix: use pnpm in Dockerfile
+[33mb2cc9f0[m feat: add Dockerfile and production config
+[33mfcf98d5[m Contactos (tercera parte)
+[33ma4374a4[m Contactos (segunda parte)
+[33m7567fd2[m Contactos (primera parte)
+[33m3788242[m Configuracion de la APP
+[33mbc4db7c[m Perfil de usuario -> Seguridad
+[33m213aed5[m Perfil de usuario -> Editar perfil
+[33m6193d65[m Verificar email al registrar usuario
+[33ma49cc7f[m Registro de usuarios
+[33me83d724[m Cerrar sesion
+[33m9a18dc7[m Login con Google
+[33mb6bc0e8[m Correccion de errores en Login de usuario
+[33m98668fb[m Login de usuario
+[33m1ed6cae[m Composables -> utilidades
+[33m0383d54[m Intalación y configuracion de nuevas dependencias
+[33m4a56d26[m INICIO DEL PROYECTO
