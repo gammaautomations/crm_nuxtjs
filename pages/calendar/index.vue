@@ -18,7 +18,12 @@ const { data: lawyersData } = await useFetch('/api/lawyers')
 const { data: contactsData } = await useFetch('/api/contacts?limit=200')
 
 const lawyers = computed(() => lawyersData.value || [])
-const contacts = computed(() => (contactsData.value as any)?.data || contactsData.value || [])
+
+const contacts = computed(() => {
+  console.log('contactsData:', contactsData.value)
+
+  return (contactsData.value as any)?.data || contactsData.value || []
+})
 
 // ─── Estado ───────────────────────────────────────────────────────────────────
 const calendarRef = ref()
