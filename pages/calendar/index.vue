@@ -95,16 +95,28 @@ const fetchAppointments = async (from?: string, to?: string) => {
 
   appointments.value = data
 
-  return data.map((a: any) => ({
-    id: a._id,
-    title: a.title,
-    start: a.startAt,
-    end: a.endAt,
-    allDay: a.allDay,
-    backgroundColor: a.color || '#7367F0',
-    borderColor: a.color || '#7367F0',
-    extendedProps: a,
-  }))
+  const statusColors: Record<string, string> = {
+    pending: '#FFB400', // amarillo
+    confirmed: '#28C76F', // verde
+    completed: '#00CFE8', // azul
+    cancelled: '#6c757d', // gris
+  }
+
+  return data.map((a: any) => {
+    const color = statusColors[a.status] || a.color || '#7367F0'
+
+    return {
+      id: a._id,
+      title: a.title,
+      start: a.startAt,
+      end: a.endAt,
+      allDay: a.allDay,
+      backgroundColor: color,
+      borderColor: color,
+      textColor: '#ffffff',
+      extendedProps: a,
+    }
+  })
 }
 
 // ─── FullCalendar options ─────────────────────────────────────────────────────
