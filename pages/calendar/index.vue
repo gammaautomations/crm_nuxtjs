@@ -183,6 +183,7 @@ const calendarOptions = ref({
 const openDialog = (appointment?: any) => {
   errorMsg.value = ''
   if (appointment) {
+    console.log('appointment._id:', appointment._id)
     editingId.value = appointment._id
     form.value = {
       title: appointment.title || '',
