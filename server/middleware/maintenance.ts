@@ -5,6 +5,13 @@ import { connectDB } from '~/server/utils/db'
 export default defineEventHandler(async event => {
   const url = event.path
 
+  if (
+    url.startsWith('/_nuxt/')
+  || url.startsWith('/api/auth/')
+  || url.includes('.')
+  || url.includes('/google-event')
+  ) return
+
   // Rutas públicas — no requieren auth
   if (
     url.startsWith('/_nuxt/')
