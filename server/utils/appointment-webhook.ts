@@ -10,7 +10,7 @@ export const sendAppointmentWebhook = async (
   action: WebhookAction,
 ): Promise<void> => {
   const config = useRuntimeConfig()
-  const webhookUrl = config.public.n8nWebhookUrl
+  const webhookUrl = config.n8nCalendarWebhookUrl
 
   if (!webhookUrl) {
     console.warn('[Webhook] n8nWebhookUrl no configurada — saltando webhook de cita')
