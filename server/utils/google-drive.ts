@@ -5,6 +5,10 @@ import { google } from 'googleapis'
 export const getDriveClient = () => {
   const config = useRuntimeConfig()
 
+  console.log('Drive email:', config.googleServiceAccountEmail)
+  console.log('Drive key length:', config.googleServiceAccountPrivateKey?.length)
+  console.log('Drive folder:', config.googleDriveFolderId)
+
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: config.googleServiceAccountEmail,
