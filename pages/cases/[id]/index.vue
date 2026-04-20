@@ -750,7 +750,7 @@ const archiveCase = async () => {
             </VCol>
             <VCol
               cols="12"
-              sm="6"
+              sm="5"
             >
               <AppTextField
                 v-model="timeForm.date"
@@ -772,7 +772,7 @@ const archiveCase = async () => {
             </VCol>
             <VCol
               cols="12"
-              sm="3"
+              sm="4"
             >
               <AppTextField
                 v-model.number="timeForm.hourlyRate"
