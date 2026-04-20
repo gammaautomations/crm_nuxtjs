@@ -180,6 +180,9 @@ export default defineNuxtConfig({
     mailFrom: process.env.NUXT_MAIL_FROM,
     n8nCalendarWebhookUrl: process.env.N8N_CALENDAR_WEBHOOK_URL,
     n8nSecretToken: process.env.N8N_SECRET_TOKEN,
+    googleServiceAccountEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    googleServiceAccountPrivateKey: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY,
+    googleDriveFolderId: process.env.GOOGLE_DRIVE_FOLDER_ID,
     public: {
       appUrl: process.env.APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
