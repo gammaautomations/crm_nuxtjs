@@ -1,18 +1,34 @@
-// index.vue
-
 <script setup lang="ts">
+// pages/index.vue
 definePageMeta({
   middleware: ['auth'],
 })
 
 const { data: stats, pending } = await useFetch('/api/dashboard/stats')
 
+// ── Leads (existentes) ────────────────────────────────────────────────────────
 const totals = computed(() => (stats.value as any)?.totals || {})
 const leadsByStatus = computed(() => (stats.value as any)?.leadsByStatus || [])
 const leadsByArea = computed(() => (stats.value as any)?.leadsByArea || [])
 const recentLeads = computed(() => (stats.value as any)?.recentLeads || [])
 const lawyersByLeads = computed(() => (stats.value as any)?.lawyersByLeads || [])
 const leadsByScore = computed(() => (stats.value as any)?.leadsByScore || [])
+
+// ── Nuevas métricas ───────────────────────────────────────────────────────────
+const billing = computed(() => (stats.value as any)?.billing || {})
+const cases = computed(() => (stats.value as any)?.cases || {})
+const appointments = computed(() => (stats.value as any)?.appointments || [])
+const time = computed(() => (stats.value as any)?.time || {})
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const eur = (n: number) =>
+  new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(n || 0)
+
+const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+
+const formatDateTime = (date: string) =>
+  new Date(date).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
 
 const scoreLabel = (boundary: number) => {
   if (boundary === 0)
@@ -46,15 +62,23 @@ const statusColor: Record<string, string> = {
   descartado: '#FF4C51',
 }
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('es-ES', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
+const caseStatusLabel: Record<string, string> = {
+  open: 'Abierto',
+  in_progress: 'En curso',
+  on_hold: 'En espera',
+  closed: 'Cerrado',
+  archived: 'Archivado',
 }
 
-// Opciones gráfico área
+const appointmentTypeIcon: Record<string, string> = {
+  appointment: 'tabler-calendar',
+  task: 'tabler-check',
+  reminder: 'tabler-bell',
+  hearing: 'tabler-gavel',
+  meeting: 'tabler-users',
+}
+
+// ── Gráficos existentes ───────────────────────────────────────────────────────
 const areaChartOptions = computed(() => ({
   chart: { type: 'donut' },
   labels: leadsByArea.value.map((a: any) => a._id || 'Sin área'),
@@ -63,50 +87,47 @@ const areaChartOptions = computed(() => ({
   dataLabels: { enabled: true },
 }))
 
-const areaChartSeries = computed(() =>
-  leadsByArea.value.map((a: any) => a.count),
-)
+const areaChartSeries = computed(() => leadsByArea.value.map((a: any) => a.count))
 
-// Opciones gráfico estado
 const statusChartOptions = computed(() => ({
   chart: { type: 'bar', toolbar: { show: false } },
-  xaxis: {
-    categories: leadsByStatus.value.map((s: any) => s._id),
-  },
+  xaxis: { categories: leadsByStatus.value.map((s: any) => s._id) },
   colors: leadsByStatus.value.map((s: any) => statusColor[s._id] || '#9E9E9E'),
-  plotOptions: {
-    bar: { borderRadius: 4, horizontal: false },
-  },
+  plotOptions: { bar: { borderRadius: 4, horizontal: false } },
   dataLabels: { enabled: false },
 }))
 
-const statusChartSeries = computed(() => [{
-  name: 'Leads',
-  data: leadsByStatus.value.map((s: any) => s.count),
-}])
+const statusChartSeries = computed(() => [{ name: 'Leads', data: leadsByStatus.value.map((s: any) => s.count) }])
 
-// Opciones gráfico score
 const scoreChartOptions = computed(() => ({
   chart: { type: 'bar', toolbar: { show: false } },
-  xaxis: {
-    categories: leadsByScore.value.map((s: any) => scoreLabel(s._id)),
-  },
+  xaxis: { categories: leadsByScore.value.map((s: any) => scoreLabel(s._id)) },
   colors: leadsByScore.value.map((s: any) => scoreColor(s._id)),
-  plotOptions: {
-    bar: { borderRadius: 4, horizontal: true },
-  },
+  plotOptions: { bar: { borderRadius: 4, horizontal: true } },
   dataLabels: { enabled: false },
 }))
 
-const scoreChartSeries = computed(() => [{
-  name: 'Leads',
-  data: leadsByScore.value.map((s: any) => s.count),
-}])
+const scoreChartSeries = computed(() => [{ name: 'Leads', data: leadsByScore.value.map((s: any) => s.count) }])
+
+// ── Gráfico facturación mensual ───────────────────────────────────────────────
+const billingChartOptions = computed(() => ({
+  chart: { type: 'area', toolbar: { show: false }, sparkline: { enabled: false } },
+  xaxis: { categories: billing.value.monthly?.map((m: any) => m.label) || [] },
+  colors: ['#7367F0', '#28C76F'],
+  stroke: { curve: 'smooth', width: 2 },
+  fill: { type: 'gradient', gradient: { shadeIntensity: 0.1 } },
+  dataLabels: { enabled: false },
+  legend: { position: 'top' },
+  yaxis: { labels: { formatter: (v: number) => `${v}€` } },
+}))
+
+const billingChartSeries = computed(() => [
+  { name: 'Facturado', data: billing.value.monthly?.map((m: any) => m.issued) || [] },
+  { name: 'Cobrado', data: billing.value.monthly?.map((m: any) => m.paid) || [] },
+])
 
 onMounted(() => {
-  const interval = setInterval(async () => {
-    await refreshNuxtData()
-  }, 30000)
+  const interval = setInterval(async () => { await refreshNuxtData() }, 30000)
 
   onUnmounted(() => clearInterval(interval))
 })
@@ -118,11 +139,13 @@ onMounted(() => {
       Dashboard
     </h4>
 
-    <!-- Cards totales -->
+    <!-- ── KPIs fila 1: Leads + Facturación ── -->
     <VRow class="mb-6">
+      <!-- Leads -->
       <VCol
         cols="12"
-        sm="4"
+        sm="6"
+        lg="3"
       >
         <VCard>
           <VCardText class="d-flex align-center justify-space-between">
@@ -147,9 +170,12 @@ onMounted(() => {
           </VCardText>
         </VCard>
       </VCol>
+
+      <!-- Contactos -->
       <VCol
         cols="12"
-        sm="4"
+        sm="6"
+        lg="3"
       >
         <VCard>
           <VCardText class="d-flex align-center justify-space-between">
@@ -174,9 +200,45 @@ onMounted(() => {
           </VCardText>
         </VCard>
       </VCol>
+
+      <!-- Expedientes activos -->
       <VCol
         cols="12"
-        sm="4"
+        sm="6"
+        lg="3"
+      >
+        <VCard>
+          <VCardText class="d-flex align-center justify-space-between">
+            <div>
+              <p class="text-body-2 text-disabled mb-1">
+                Expedientes activos
+              </p>
+              <p class="text-h4 font-weight-bold mb-0">
+                {{ cases.active || 0 }}
+              </p>
+              <p class="text-body-2 text-disabled mb-0">
+                de {{ cases.total || 0 }} totales
+              </p>
+            </div>
+            <VAvatar
+              color="info"
+              variant="tonal"
+              size="56"
+            >
+              <VIcon
+                icon="tabler-folder"
+                size="28"
+              />
+            </VAvatar>
+          </VCardText>
+        </VCard>
+      </VCol>
+
+      <!-- Abogados -->
+      <VCol
+        cols="12"
+        sm="6"
+        lg="3"
       >
         <VCard>
           <VCardText class="d-flex align-center justify-space-between">
@@ -203,8 +265,156 @@ onMounted(() => {
       </VCol>
     </VRow>
 
+    <!-- ── KPIs fila 2: Facturación ── -->
     <VRow class="mb-6">
-      <!-- Gráfico por área -->
+      <VCol
+        cols="12"
+        sm="6"
+        lg="3"
+      >
+        <VCard>
+          <VCardText class="d-flex align-center justify-space-between">
+            <div>
+              <p class="text-body-2 text-disabled mb-1">
+                Facturado (año)
+              </p>
+              <p class="text-h5 font-weight-bold mb-0">
+                {{ eur(billing.totalIssued) }}
+              </p>
+            </div>
+            <VAvatar
+              color="primary"
+              variant="tonal"
+              size="56"
+            >
+              <VIcon
+                icon="tabler-file-invoice"
+                size="28"
+              />
+            </VAvatar>
+          </VCardText>
+        </VCard>
+      </VCol>
+
+      <VCol
+        cols="12"
+        sm="6"
+        lg="3"
+      >
+        <VCard>
+          <VCardText class="d-flex align-center justify-space-between">
+            <div>
+              <p class="text-body-2 text-disabled mb-1">
+                Cobrado (año)
+              </p>
+              <p class="text-h5 font-weight-bold mb-0 text-success">
+                {{ eur(billing.totalPaid) }}
+              </p>
+            </div>
+            <VAvatar
+              color="success"
+              variant="tonal"
+              size="56"
+            >
+              <VIcon
+                icon="tabler-circle-check"
+                size="28"
+              />
+            </VAvatar>
+          </VCardText>
+        </VCard>
+      </VCol>
+
+      <VCol
+        cols="12"
+        sm="6"
+        lg="3"
+      >
+        <VCard>
+          <VCardText class="d-flex align-center justify-space-between">
+            <div>
+              <p class="text-body-2 text-disabled mb-1">
+                Pendiente cobro
+              </p>
+              <p class="text-h5 font-weight-bold mb-0 text-warning">
+                {{ eur(billing.totalPending) }}
+              </p>
+            </div>
+            <VAvatar
+              color="warning"
+              variant="tonal"
+              size="56"
+            >
+              <VIcon
+                icon="tabler-clock"
+                size="28"
+              />
+            </VAvatar>
+          </VCardText>
+        </VCard>
+      </VCol>
+
+      <VCol
+        cols="12"
+        sm="6"
+        lg="3"
+      >
+        <VCard>
+          <VCardText class="d-flex align-center justify-space-between">
+            <div>
+              <p class="text-body-2 text-disabled mb-1">
+                Horas mes (importe)
+              </p>
+              <p class="text-h5 font-weight-bold mb-0">
+                {{ eur(time.totalAmount) }}
+              </p>
+              <p class="text-body-2 text-disabled mb-0">
+                {{ time.totalHours || 0 }}h registradas
+              </p>
+            </div>
+            <VAvatar
+              color="secondary"
+              variant="tonal"
+              size="56"
+            >
+              <VIcon
+                icon="tabler-clock-hour-4"
+                size="28"
+              />
+            </VAvatar>
+          </VCardText>
+        </VCard>
+      </VCol>
+    </VRow>
+
+    <!-- ── Gráfico facturación mensual ── -->
+    <VRow class="mb-6">
+      <VCol cols="12">
+        <VCard>
+          <VCardTitle class="pa-6 pb-0">
+            Facturación últimos 6 meses
+          </VCardTitle>
+          <VCardText>
+            <VueApexCharts
+              v-if="billing.monthly?.length"
+              type="area"
+              height="250"
+              :options="billingChartOptions"
+              :series="billingChartSeries"
+            />
+            <p
+              v-else
+              class="text-center text-disabled pa-6"
+            >
+              Sin datos de facturación
+            </p>
+          </VCardText>
+        </VCard>
+      </VCol>
+    </VRow>
+
+    <!-- ── Gráficos leads ── -->
+    <VRow class="mb-6">
       <VCol
         cols="12"
         md="4"
@@ -217,7 +427,7 @@ onMounted(() => {
             <VueApexCharts
               v-if="areaChartSeries.length"
               type="donut"
-              height="300"
+              height="280"
               :options="areaChartOptions"
               :series="areaChartSeries"
             />
@@ -231,7 +441,6 @@ onMounted(() => {
         </VCard>
       </VCol>
 
-      <!-- Gráfico por estado -->
       <VCol
         cols="12"
         md="4"
@@ -244,7 +453,7 @@ onMounted(() => {
             <VueApexCharts
               v-if="statusChartSeries[0]?.data?.length"
               type="bar"
-              height="300"
+              height="280"
               :options="statusChartOptions"
               :series="statusChartSeries"
             />
@@ -258,7 +467,6 @@ onMounted(() => {
         </VCard>
       </VCol>
 
-      <!-- Gráfico por score -->
       <VCol
         cols="12"
         md="4"
@@ -271,7 +479,7 @@ onMounted(() => {
             <VueApexCharts
               v-if="scoreChartSeries[0]?.data?.length"
               type="bar"
-              height="300"
+              height="280"
               :options="scoreChartOptions"
               :series="scoreChartSeries"
             />
@@ -286,8 +494,123 @@ onMounted(() => {
       </VCol>
     </VRow>
 
+    <!-- ── Próximas citas + Expedientes recientes ── -->
+    <VRow class="mb-6">
+      <!-- Próximas citas -->
+      <VCol
+        cols="12"
+        md="5"
+      >
+        <VCard height="100%">
+          <VCardTitle class="pa-6 pb-2 d-flex align-center justify-space-between">
+            <span>Próximas citas (7 días)</span>
+            <VBtn
+              size="small"
+              variant="text"
+              to="/calendar"
+            >
+              Ver todas
+            </VBtn>
+          </VCardTitle>
+          <VCardText class="pa-0">
+            <div
+              v-if="!appointments.length"
+              class="text-center text-disabled pa-6"
+            >
+              No hay citas próximas
+            </div>
+            <VList v-else>
+              <VListItem
+                v-for="apt in appointments"
+                :key="apt._id"
+                :prepend-icon="appointmentTypeIcon[apt.type] || 'tabler-calendar'"
+                to="/calendar"
+              >
+                <VListItemTitle class="font-weight-medium">
+                  {{ apt.title }}
+                </VListItemTitle>
+                <VListItemSubtitle>
+                  {{ formatDateTime(apt.startAt) }}
+                  <span v-if="apt.contactId"> · {{ apt.contactId?.fullName || apt.contactId?.name }}</span>
+                </VListItemSubtitle>
+                <template #append>
+                  <div
+                    class="rounded-circle"
+                    :style="`background: ${apt.color || '#7367F0'}; width: 10px; height: 10px;`"
+                  />
+                </template>
+              </VListItem>
+            </VList>
+          </VCardText>
+        </VCard>
+      </VCol>
+
+      <!-- Expedientes recientes -->
+      <VCol
+        cols="12"
+        md="7"
+      >
+        <VCard height="100%">
+          <VCardTitle class="pa-6 pb-2 d-flex align-center justify-space-between">
+            <span>Expedientes activos</span>
+            <VBtn
+              size="small"
+              variant="text"
+              to="/cases"
+            >
+              Ver todos
+            </VBtn>
+          </VCardTitle>
+          <VCardText class="pa-0">
+            <div
+              v-if="!cases.recent?.length"
+              class="text-center text-disabled pa-6"
+            >
+              No hay expedientes activos
+            </div>
+            <VTable
+              v-else
+              density="compact"
+            >
+              <thead>
+                <tr>
+                  <th>Número</th>
+                  <th>Título</th>
+                  <th>Cliente</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="c in cases.recent"
+                  :key="c._id"
+                  style="cursor: pointer;"
+                  @click="navigateTo(`/cases/${c._id}`)"
+                >
+                  <td>
+                    <span class="text-primary font-weight-semibold">{{ c.number }}</span>
+                  </td>
+                  <td>{{ c.title }}</td>
+                  <td>{{ c.contactId?.fullName || c.contactId?.name || '—' }}</td>
+                  <td>
+                    <VChip
+                      size="x-small"
+                      label
+                      :color="c.status === 'open' ? 'primary' : 'info'"
+                    >
+                      {{ caseStatusLabel[c.status] || c.status }}
+                    </VChip>
+                  </td>
+                </tr>
+              </tbody>
+            </VTable>
+          </VCardText>
+        </VCard>
+      </VCol>
+    </VRow>
+
+    <!-- ── Leads recientes + Ranking abogados ── -->
     <VRow>
-      <!-- Leads recientes -->
       <VCol
         cols="12"
         md="7"
@@ -356,7 +679,6 @@ onMounted(() => {
         </VCard>
       </VCol>
 
-      <!-- Ranking abogados -->
       <VCol
         cols="12"
         md="5"
