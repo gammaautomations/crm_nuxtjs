@@ -19,6 +19,89 @@ const totalHours = computed(() => timeData.value?.totalHours || 0)
 const totalAmount = computed(() => timeData.value?.totalAmount || 0)
 const unbilledEntries = computed(() => timeEntries.value.filter((e: any) => !e.billed))
 
+// ─── Documentos ───────────────────────────────────────────────────────────────
+const { data: docsData, refresh: refreshDocs } = await useFetch<any[]>(`/api/cases/${params.id}/documents`)
+const documents = computed(() => docsData.value || [])
+
+const uploadInput = ref<HTMLInputElement | null>(null)
+const uploadingDoc = ref(false)
+const uploadDocName = ref('')
+const uploadDialog = ref(false)
+const uploadFile = ref<File | null>(null)
+
+const onFileSelected = (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file)
+    return
+  uploadFile.value = file
+  uploadDocName.value = file.name.replace(/\.[^.]+$/, '')
+  uploadDialog.value = true
+}
+
+const uploadDocument = async () => {
+  if (!uploadFile.value)
+    return
+  uploadingDoc.value = true
+  try {
+    const formData = new FormData()
+
+    formData.append('file', uploadFile.value)
+    formData.append('name', uploadDocName.value || uploadFile.value.name)
+
+    await $fetch(`/api/cases/${params.id}/documents`, {
+      method: 'POST',
+      body: formData,
+    })
+    uploadDialog.value = false
+    uploadFile.value = null
+    uploadDocName.value = ''
+    if (uploadInput.value)
+      uploadInput.value.value = ''
+    await refreshDocs()
+  }
+  catch (e: any) {
+    alert(e?.data?.message || 'Error al subir el documento')
+  }
+  finally {
+    uploadingDoc.value = false
+  }
+}
+
+const deleteDocument = async (doc: any) => {
+  const confirmed = await swalConfirmation({
+    title: '¿Eliminar documento?',
+    text: `Se eliminará "${doc.name}" de Google Drive.`,
+    icon: 'warning',
+  })
+
+  if (!confirmed)
+    return
+  await $fetch(`/api/cases/${params.id}/documents/${doc._id}`, { method: 'DELETE' })
+  await refreshDocs()
+}
+
+const fileIcon = (mimeType: string) => {
+  if (mimeType.includes('pdf'))
+    return { icon: 'tabler-file-type-pdf', color: 'error' }
+  if (mimeType.includes('word'))
+    return { icon: 'tabler-file-type-doc', color: 'primary' }
+  if (mimeType.includes('excel') || mimeType.includes('sheet'))
+    return { icon: 'tabler-file-type-xls', color: 'success' }
+  if (mimeType.includes('image'))
+    return { icon: 'tabler-photo', color: 'info' }
+
+  return { icon: 'tabler-file', color: 'secondary' }
+}
+
+const formatSize = (bytes: number) => {
+  if (bytes < 1024)
+    return `${bytes} B`
+  if (bytes < 1024 * 1024)
+    return `${(bytes / 1024).toFixed(1)} KB`
+
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
 // ─── Estado UI ────────────────────────────────────────────────────────────────
 const loadingAction = ref<string | null>(null)
 const milestoneDialog = ref(false)
@@ -65,10 +148,7 @@ const typeLabel: Record<string, string> = {
 }
 
 const feeTypeLabel: Record<string, string> = {
-  fixed: 'Tarifa fija',
-  hourly: 'Por horas',
-  contingency: 'A éxito',
-  mixed: 'Mixto',
+  fixed: 'Tarifa fija', hourly: 'Por horas', contingency: 'A éxito', mixed: 'Mixto',
 }
 
 const formatDate = (d: string) => d ? new Intl.DateTimeFormat('es-ES').format(new Date(d)) : '—'
@@ -79,7 +159,6 @@ const milestonesCompleted = computed(() => caseDoc.value?.milestones?.filter((m:
 const milestonesTotal = computed(() => caseDoc.value?.milestones?.length || 0)
 const progressPercent = computed(() => milestonesTotal.value > 0 ? Math.round((milestonesCompleted.value / milestonesTotal.value) * 100) : 0)
 
-// ─── Estado ───────────────────────────────────────────────────────────────────
 const statusItems = [
   { title: 'Abierto', value: 'open' },
   { title: 'En curso', value: 'in_progress' },
@@ -159,17 +238,11 @@ const saveTimeEntry = async () => {
     return
   loadingAction.value = 'time'
   try {
-    const body = {
-      ...timeForm.value,
-      caseId: params.id,
-      lawyerId: timeForm.value.lawyerId || undefined,
-    }
-
+    const body = { ...timeForm.value, caseId: params.id, lawyerId: timeForm.value.lawyerId || undefined }
     if (editingTimeId.value)
       await $fetch(`/api/time-entries/${editingTimeId.value}`, { method: 'PUT', body })
     else
       await $fetch('/api/time-entries', { method: 'POST', body })
-
     timeDialog.value = false
     await refreshTime()
   }
@@ -177,19 +250,13 @@ const saveTimeEntry = async () => {
 }
 
 const deleteTimeEntry = async (entry: any) => {
-  const confirmed = await swalConfirmation({
-    title: '¿Eliminar entrada?',
-    text: `Se eliminará "${entry.description}"`,
-    icon: 'warning',
-  })
-
+  const confirmed = await swalConfirmation({ title: '¿Eliminar entrada?', text: `Se eliminará "${entry.description}"`, icon: 'warning' })
   if (!confirmed)
     return
   await $fetch(`/api/time-entries/${entry._id}`, { method: 'DELETE' })
   await refreshTime()
 }
 
-// ─── Facturar horas ───────────────────────────────────────────────────────────
 const billHours = async () => {
   if (!selectedEntries.value.length || !billInvoiceId.value.trim())
     return
@@ -204,20 +271,12 @@ const billHours = async () => {
     billInvoiceId.value = ''
     await refreshTime()
   }
-  catch (e: any) {
-    alert(e?.data?.message || 'Error al facturar las horas')
-  }
+  catch (e: any) { alert(e?.data?.message || 'Error al facturar las horas') }
   finally { loadingAction.value = null }
 }
 
-// ─── Archivar ─────────────────────────────────────────────────────────────────
 const archiveCase = async () => {
-  const confirmed = await swalConfirmation({
-    title: '¿Archivar expediente?',
-    text: 'El expediente se marcará como archivado.',
-    icon: 'warning',
-  })
-
+  const confirmed = await swalConfirmation({ title: '¿Archivar expediente?', text: 'El expediente se marcará como archivado.', icon: 'warning' })
   if (!confirmed)
     return
   await $fetch(`/api/cases/${params.id}`, { method: 'DELETE' })
@@ -260,7 +319,6 @@ const archiveCase = async () => {
           </p>
         </div>
       </div>
-
       <div class="d-flex gap-2 flex-wrap">
         <AppSelect
           :model-value="caseDoc.status"
@@ -360,6 +418,81 @@ const archiveCase = async () => {
           </VCardText>
         </VCard>
 
+        <!-- Documentos -->
+        <VCard class="mb-6">
+          <VCardTitle class="pa-6 pb-2 d-flex align-center justify-space-between">
+            <span>Documentos <span class="text-body-2 text-disabled ms-1">{{ documents.length }}</span></span>
+            <VBtn
+              size="small"
+              variant="tonal"
+              color="primary"
+              prepend-icon="tabler-upload"
+              @click="uploadInput?.click()"
+            >
+              Subir documento
+            </VBtn>
+          </VCardTitle>
+          <input
+            ref="uploadInput"
+            type="file"
+            class="d-none"
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.txt"
+            @change="onFileSelected"
+          >
+
+          <VCardText class="pa-0">
+            <div
+              v-if="!documents.length"
+              class="text-center text-disabled pa-6"
+            >
+              No hay documentos adjuntos
+            </div>
+            <VList v-else>
+              <VListItem
+                v-for="doc in documents"
+                :key="doc._id"
+                :href="doc.driveUrl"
+                target="_blank"
+              >
+                <template #prepend>
+                  <VAvatar
+                    :color="fileIcon(doc.mimeType).color"
+                    variant="tonal"
+                    size="40"
+                  >
+                    <VIcon :icon="fileIcon(doc.mimeType).icon" />
+                  </VAvatar>
+                </template>
+                <VListItemTitle class="font-weight-medium">
+                  {{ doc.name }}
+                </VListItemTitle>
+                <VListItemSubtitle>
+                  {{ formatSize(doc.size) }} · {{ doc.uploadedBy?.name || 'Usuario' }} · {{ formatDate(doc.createdAt) }}
+                </VListItemSubtitle>
+                <template #append>
+                  <div class="d-flex gap-1">
+                    <VBtn
+                      icon="tabler-download"
+                      variant="text"
+                      size="small"
+                      :href="doc.downloadUrl"
+                      target="_blank"
+                      @click.stop
+                    />
+                    <VBtn
+                      icon="tabler-trash"
+                      variant="text"
+                      color="error"
+                      size="small"
+                      @click.stop="deleteDocument(doc)"
+                    />
+                  </div>
+                </template>
+              </VListItem>
+            </VList>
+          </VCardText>
+        </VCard>
+
         <!-- Registro de horas -->
         <VCard class="mb-6">
           <VCardTitle class="pa-6 pb-2 d-flex align-center justify-space-between">
@@ -389,7 +522,6 @@ const archiveCase = async () => {
               </VBtn>
             </div>
           </VCardTitle>
-
           <VCardText class="pa-0">
             <div
               v-if="!timeEntries.length"
@@ -397,7 +529,6 @@ const archiveCase = async () => {
             >
               No hay horas registradas
             </div>
-
             <VTable
               v-else
               density="compact"
@@ -497,7 +628,6 @@ const archiveCase = async () => {
               Añadir hito
             </VBtn>
           </VCardTitle>
-
           <VCardText class="pa-0">
             <VProgressLinear
               :model-value="progressPercent"
@@ -728,6 +858,52 @@ const archiveCase = async () => {
         </VCard>
       </VCol>
     </VRow>
+
+    <!-- Dialog: Nombre documento -->
+    <VDialog
+      v-model="uploadDialog"
+      max-width="440"
+    >
+      <VCard>
+        <VCardTitle class="pa-6">
+          Subir documento
+        </VCardTitle>
+        <VCardText>
+          <VAlert
+            type="info"
+            variant="tonal"
+            density="compact"
+            class="mb-4"
+          >
+            {{ uploadFile?.name }} ({{ uploadFile ? formatSize(uploadFile.size) : '' }})
+          </VAlert>
+          <AppTextField
+            v-model="uploadDocName"
+            label="Nombre del documento *"
+            placeholder="Ej: Contrato de servicios"
+            autofocus
+          />
+        </VCardText>
+        <VCardActions class="pa-6 pt-0">
+          <VSpacer />
+          <VBtn
+            variant="outlined"
+            color="secondary"
+            @click="uploadDialog = false"
+          >
+            Cancelar
+          </VBtn>
+          <VBtn
+            color="primary"
+            :loading="uploadingDoc"
+            :disabled="!uploadDocName.trim()"
+            @click="uploadDocument"
+          >
+            Subir
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
 
     <!-- Dialog: Registrar horas -->
     <VDialog
