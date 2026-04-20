@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import { CASE_STATUSES, CASE_TYPES, type CaseStatus, type CaseType } from '~/server/models/LegalCase '
+import { CASE_STATUSES, CASE_TYPES, type CaseStatus, type CaseType } from '~/server/models/LegalCase'
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery } from 'h3'
-import LegalCase from '~/server/models/LegalCase '
+import LegalCase from '~/server/models/LegalCase'
 import { requireAuth } from '~/server/utils/auth.middleware'
 
 export default defineEventHandler(async event => {
