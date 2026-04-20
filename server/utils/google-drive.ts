@@ -8,7 +8,10 @@ export const getDriveClient = () => {
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: config.googleServiceAccountEmail,
-      private_key: config.googleServiceAccountPrivateKey?.replace(/\\n/g, '\n'),
+      private_key: (config.googleServiceAccountPrivateKey as string)
+        ?.replace(/\\n/g, '\n')
+        ?.replace(/\\\\n/g, '\n')
+        ?.trim(),
     },
     scopes: ['https://www.googleapis.com/auth/drive'],
   })
