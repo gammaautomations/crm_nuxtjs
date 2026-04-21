@@ -18,3 +18,5 @@ pnpm add ua-parser-js
 pnpm add -D @types/ua-parser-js
 pnpm install puppeteer-core @sparticuz/chromium
 pnpm install googleapis
+pnpm install nodemailer
+pnpm install -D @types/nodemailer

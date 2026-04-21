@@ -11,6 +11,7 @@ export default defineEventHandler(async event => {
     || url.startsWith('/api/auth/')
     || url.startsWith('/api/uploads/')
     || url.includes('/google-event')
+    || url === '/api/notifications/check'
     || url.includes('.')
   ) return
 
