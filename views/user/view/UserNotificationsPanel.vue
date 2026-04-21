@@ -1,7 +1,5 @@
 <script setup lang="ts">
-// views/user/view/UserNotificationsPanel.vue
-
-const { data, refresh } = await useFetch<any>('/api/user/notifications-prefs')
+const { data, refresh } = await useFetch<any>('/api/users/me/notifications-prefs')
 
 const prefs = ref({
   emailInvoiceDue: true,
@@ -23,7 +21,7 @@ const saved = ref(false)
 const save = async () => {
   loading.value = true
   try {
-    await $fetch('/api/user/notifications-prefs', { method: 'PUT', body: prefs.value })
+    await $fetch('/api/users/me/notifications-prefs', { method: 'PUT', body: prefs.value })
     saved.value = true
     setTimeout(() => { saved.value = false }, 2000)
   }

@@ -1,7 +1,5 @@
 <script setup lang="ts">
-// views/user/view/UserActivityPanel.vue
-
-const { data, pending } = await useFetch<any[]>('/api/user/activity')
+const { data, pending } = await useFetch<any[]>('/api/users/me/activity')
 const activities = computed(() => data.value || [])
 
 const typeConfig: Record<string, { color: string; icon: string }> = {
