@@ -22,6 +22,7 @@ const getNavItems = () => {
     },
   ]
 
+  // Leads — todos los roles
   if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
     items.push({
       title: 'Leads',
@@ -43,6 +44,7 @@ const getNavItems = () => {
     })
   }
 
+  // Contactos — todos los roles
   if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
     items.push({
       title: 'Contactos',
@@ -51,6 +53,7 @@ const getNavItems = () => {
     })
   }
 
+  // Calendario — todos los roles
   if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
     items.push({
       title: 'Calendario',
@@ -59,7 +62,8 @@ const getNavItems = () => {
     })
   }
 
-  if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
+  // Expedientes — solo Admin y Abogado
+  if (['Admin', 'Abogado'].includes(role.value || '')) {
     items.push({
       title: 'Expedientes',
       to: { name: 'cases' },
@@ -67,7 +71,8 @@ const getNavItems = () => {
     })
   }
 
-  if (['Admin', 'Abogado', 'Recepcionista'].includes(role.value || '')) {
+  // Facturación — solo Admin y Abogado
+  if (['Admin', 'Abogado'].includes(role.value || '')) {
     items.push({
       title: 'Facturación',
       to: { name: 'billing' },
@@ -75,6 +80,7 @@ const getNavItems = () => {
     })
   }
 
+  // Administración — solo Admin y Superuser
   if (['Admin', 'Superuser'].includes(role.value || '')) {
     const adminChildren: any[] = []
 

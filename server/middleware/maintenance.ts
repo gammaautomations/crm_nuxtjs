@@ -5,26 +5,33 @@ import { connectDB } from '~/server/utils/db'
 export default defineEventHandler(async event => {
   const url = event.path
 
-  if (
-    url.startsWith('/_nuxt/')
-  || url.startsWith('/api/auth/')
-  || url.includes('.')
-  || url.includes('/google-event')
-  ) return
-
-  // Rutas públicas — no requieren auth
+  // ─── Rutas públicas — no requieren auth ──────────────────────────────────────
   if (
     url.startsWith('/_nuxt/')
     || url.startsWith('/api/auth/')
-    || url.includes('.')
     || url.startsWith('/api/uploads/')
+    || url.includes('/google-event')
+    || url.includes('.')
   ) return
 
-  // Proteger toda la API con JWT
-  if (url.startsWith('/api/'))
-    requireAuth(event)
+  // ─── Proteger toda la API con JWT ─────────────────────────────────────────────
+  if (url.startsWith('/api/')) {
+    const user = requireAuth(event)
 
-  // Modo mantenimiento (solo para rutas no-API)
+    // ─── Proteger rutas por rol ─────────────────────────────────────────────────
+    const restrictedRoutes = [
+      '/api/cases',
+      '/api/invoices',
+      '/api/time-entries',
+    ]
+
+    const isRestricted = restrictedRoutes.some(r => url.startsWith(r))
+
+    if (isRestricted && !['Admin', 'Abogado'].includes(user.role))
+      throw createError({ statusCode: 403, message: 'No tienes permisos para acceder a este recurso' })
+  }
+
+  // ─── Modo mantenimiento (solo para rutas no-API) ──────────────────────────────
   if (!url.startsWith('/api/')) {
     try {
       await connectDB()
