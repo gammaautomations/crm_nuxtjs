@@ -4,9 +4,9 @@ import Invoice from '~/server/models/Invoice'
 import LegalCase from '~/server/models/LegalCase'
 import { Notification } from '~/server/models/Notification'
 import { User } from '~/server/models/User'
+import { emailTemplate, sendMail } from '~/server/utils/mailer'
 
 export default defineEventHandler(async event => {
-  // Autenticación por token secreto de n8n
   const config = useRuntimeConfig()
   const token = getHeader(event, 'x-n8n-token')
 
@@ -17,9 +17,7 @@ export default defineEventHandler(async event => {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000)
   const in3Days = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000)
-  const in7Days = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
 
-  // Obtener todos los admins y abogados para notificarles
   const adminUsers = await User.find({ status: true }).lean()
   const adminIds = adminUsers.map((u: any) => u._id)
 
@@ -34,7 +32,6 @@ export default defineEventHandler(async event => {
 
   for (const invoice of overdueInvoices) {
     for (const userId of adminIds) {
-      // Evitar duplicados — no crear si ya existe una notificación hoy
       const existing = await Notification.findOne({
         userId,
         link: `/billing/${invoice._id}`,
@@ -94,7 +91,6 @@ export default defineEventHandler(async event => {
   }).populate('contactId', 'name fullName').lean()
 
   for (const apt of todayAppointments) {
-    // Solo notificar al abogado asignado o a todos si no hay abogado
     const notifyIds = (apt as any).lawyerId
       ? adminIds.filter((id: any) => id.toString() === (apt as any).lawyerId?.toString())
       : adminIds
@@ -122,6 +118,57 @@ export default defineEventHandler(async event => {
       })
       created++
     }
+  }
+
+  // ─── Enviar email resumen ─────────────────────────────────────────────────────
+  try {
+    const hasAlerts = overdueInvoices.length > 0 || urgentCases.length > 0 || todayAppointments.length > 0
+
+    if (hasAlerts) {
+      const appUrl = config.public.appUrl || 'https://crm.gammaautomations.es'
+      let bodyHtml = `<p>Buenos días. Resumen de alertas para hoy <strong>${today.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</strong>:</p>`
+
+      if (overdueInvoices.length > 0) {
+        bodyHtml += `<div class="alert error"><strong>🔴 Facturas vencidas (${overdueInvoices.length})</strong>`
+        for (const inv of overdueInvoices.slice(0, 5))
+          bodyHtml += `<p style="margin:4px 0">• ${(inv as any).number} — ${(inv as any).contactId?.fullName || (inv as any).contactId?.name || 'Sin cliente'} — vencida el ${new Date((inv as any).dueDate).toLocaleDateString('es-ES')}</p>`
+        if (overdueInvoices.length > 5)
+          bodyHtml += `<p style="margin:4px 0">...y ${overdueInvoices.length - 5} más</p>`
+        bodyHtml += `<a href="${appUrl}/billing" class="btn">Ver facturas</a></div>`
+      }
+
+      if (urgentCases.length > 0) {
+        bodyHtml += `<div class="alert warning"><strong>🟡 Expedientes con fecha límite próxima (${urgentCases.length})</strong>`
+        for (const c of urgentCases.slice(0, 5)) {
+          const days = Math.ceil(((c as any).deadline - today.getTime()) / (1000 * 60 * 60 * 24))
+
+          bodyHtml += `<p style="margin:4px 0">• ${(c as any).number} — ${(c as any).title} — vence en ${days} día${days === 1 ? '' : 's'}</p>`
+        }
+        bodyHtml += `<a href="${appUrl}/cases" class="btn">Ver expedientes</a></div>`
+      }
+
+      if (todayAppointments.length > 0) {
+        bodyHtml += `<div class="alert info"><strong>🔵 Citas de hoy (${todayAppointments.length})</strong>`
+        for (const apt of todayAppointments) {
+          const hour = new Date((apt as any).startAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+
+          bodyHtml += `<p style="margin:4px 0">• ${hour} — ${(apt as any).title}${(apt as any).contactId ? ` con ${(apt as any).contactId?.fullName || (apt as any).contactId?.name}` : ''}</p>`
+        }
+        bodyHtml += `<a href="${appUrl}/calendar" class="btn">Ver calendario</a></div>`
+      }
+
+      const emails = (adminUsers as any[]).filter(u => u.email).map(u => u.email)
+      if (emails.length > 0) {
+        await sendMail({
+          to: emails,
+          subject: `📋 CRM — Resumen diario ${today.toLocaleDateString('es-ES')}`,
+          html: emailTemplate('Resumen diario', bodyHtml),
+        })
+      }
+    }
+  }
+  catch (err) {
+    console.error('[Notificaciones] Error enviando email:', err)
   }
 
   return {
