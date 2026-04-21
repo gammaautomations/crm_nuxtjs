@@ -124,7 +124,7 @@ export default defineEventHandler(async event => {
   try {
     const hasAlerts = overdueInvoices.length > 0 || urgentCases.length > 0 || todayAppointments.length > 0
 
-    if (hasAlerts) {
+    if (true) {
       const appUrl = config.public.appUrl || 'https://crm.gammaautomations.es'
       let bodyHtml = `<p>Buenos días. Resumen de alertas para hoy <strong>${today.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</strong>:</p>`
 
