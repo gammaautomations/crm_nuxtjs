@@ -1,28 +1,18 @@
-// pages/user/profile/index.vue
-
 <script setup lang="ts">
+import UserActivityPanel from '@/views/user/view/UserActivityPanel.vue'
 import UserBioPanel from '@/views/user/view/UserBioPanel.vue'
 import UserEditProfile from '@/views/user/view/UserEditProfile.vue'
+import UserNotificationsPanel from '@/views/user/view/UserNotificationsPanel.vue'
 import UserSecurityPanel from '@/views/user/view/UserSecurityPanel.vue'
 import UserSessionsPanel from '@/views/user/view/UserSessionsPanel.vue'
 
 const tabs = [
-  {
-    icon: 'tabler-user',
-    title: 'Editar perfil',
-    value: 0,
-  },
-  {
-    icon: 'tabler-lock',
-    title: 'Seguridad',
-    value: 1,
-  },
-  {
-    icon: 'tabler-shield-check',
-    title: 'Autenticación 2FA',
-    value: 2,
-  },
+  { icon: 'tabler-user', title: 'Editar perfil', value: 0 },
+  { icon: 'tabler-lock', title: 'Seguridad', value: 1 },
+  { icon: 'tabler-shield-check', title: 'Autenticación 2FA', value: 2 },
   { icon: 'tabler-device-laptop', title: 'Sesiones', value: 3 },
+  { icon: 'tabler-bell', title: 'Notificaciones', value: 4 },
+  { icon: 'tabler-history', title: 'Actividad', value: 5 },
 ]
 
 const userTab = ref(0)
@@ -95,6 +85,14 @@ const userTab = ref(0)
 
         <VWindowItem :value="3">
           <UserSessionsPanel />
+        </VWindowItem>
+
+        <VWindowItem :value="4">
+          <UserNotificationsPanel />
+        </VWindowItem>
+
+        <VWindowItem :value="5">
+          <UserActivityPanel />
         </VWindowItem>
       </VWindow>
     </VCol>
