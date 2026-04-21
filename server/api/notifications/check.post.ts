@@ -1,7 +1,7 @@
 import { createError, defineEventHandler, getHeader } from 'h3'
 import Appointment from '~/server/models/Appointment'
-import LegalCase from '~/server/models/Case'
 import Invoice from '~/server/models/Invoice'
+import LegalCase from '~/server/models/LegalCase'
 import { Notification } from '~/server/models/Notification'
 import { User } from '~/server/models/User'
 
