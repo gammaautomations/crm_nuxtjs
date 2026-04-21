@@ -160,6 +160,7 @@ export default defineEventHandler(async event => {
       const emails = (adminUsers as any[]).filter(u => u.email).map(u => u.email)
       if (emails.length > 0) {
         console.log('[Notificaciones] Enviando email a:', emails)
+        console.log('[Notificaciones] Usuarios:', adminUsers.length, 'Emails:', emails)
         await sendMail({
           to: emails,
           subject: `📋 CRM — Resumen diario ${today.toLocaleDateString('es-ES')}`,
