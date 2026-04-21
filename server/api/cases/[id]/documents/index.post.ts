@@ -1,8 +1,7 @@
 import { createError, defineEventHandler, getRouterParam, readMultipartFormData } from 'h3'
-import { requireAuth } from '~/server/utils/auth.middleware'
-
 import CaseDocument from '~/server/models/CaseDocument'
-import { uploadFileToDrive } from '~/server/utils/google-drive'
+import { requireAuth } from '~/server/utils/auth.middleware'
+import { saveFile } from '~/server/utils/local-storage'
 
 const MAX_SIZE = 20 * 1024 * 1024 // 20MB
 
@@ -39,26 +38,22 @@ export default defineEventHandler(async event => {
   if (fileField.data.length > MAX_SIZE)
     throw createError({ statusCode: 422, message: 'El archivo no puede superar los 20MB' })
 
-  const config = useRuntimeConfig()
-
-  const driveFile = await uploadFileToDrive(
-    fileField.data,
-    filename,
-    mimeType,
-    config.googleDriveFolderId,
-  )
+  const saved = await saveFile(fileField.data, filename, `case-${caseId}`)
 
   const nameField = formData.find(f => f.name === 'name')
   const docName = nameField?.data?.toString() || filename
+
+  const config = useRuntimeConfig()
+  const baseUrl = config.public.appUrl || 'https://crm.gammaautomations.es'
 
   return await CaseDocument.create({
     name: docName,
     originalName: filename,
     mimeType,
     size: fileField.data.length,
-    driveId: driveFile.id,
-    driveUrl: driveFile.webViewLink,
-    downloadUrl: driveFile.webContentLink,
+    driveId: saved.id,
+    driveUrl: `${baseUrl}/uploads/case-${caseId}/${saved.filename}`,
+    downloadUrl: `${baseUrl}/uploads/case-${caseId}/${saved.filename}`,
     caseId,
     uploadedBy: user.id,
   })
