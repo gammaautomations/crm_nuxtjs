@@ -17,6 +17,7 @@ export default defineEventHandler(async event => {
     url.startsWith('/_nuxt/')
     || url.startsWith('/api/auth/')
     || url.includes('.')
+    || url.startsWith('/api/uploads/')
   ) return
 
   // Proteger toda la API con JWT

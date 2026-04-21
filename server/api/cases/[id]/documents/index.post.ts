@@ -52,8 +52,8 @@ export default defineEventHandler(async event => {
     mimeType,
     size: fileField.data.length,
     driveId: saved.id,
-    driveUrl: `${baseUrl}/uploads/case-${caseId}/${saved.filename}`,
-    downloadUrl: `${baseUrl}/uploads/case-${caseId}/${saved.filename}`,
+    driveUrl: `${baseUrl}/api/uploads/case-${caseId}/${saved.filename}`,
+    downloadUrl: `${baseUrl}/api/uploads/case-${caseId}/${saved.filename}`,
     caseId,
     uploadedBy: user.id,
   })
