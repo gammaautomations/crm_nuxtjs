@@ -101,6 +101,7 @@ const archiveCase = async (c: any) => {
       <h4 class="text-h4">
         Expedientes
       </h4>
+
       <VBtn
         color="primary"
         prepend-icon="tabler-plus"

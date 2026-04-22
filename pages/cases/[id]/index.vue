@@ -520,6 +520,16 @@ const archiveCase = async () => {
               >
                 Registrar horas
               </VBtn>
+              <VBtn
+                size="small"
+                variant="tonal"
+                color="secondary"
+                prepend-icon="tabler-file-spreadsheet"
+                :href="`/api/time-entries/export?caseId=${caseDoc._id}`"
+                target="_blank"
+              >
+                Exportar
+              </VBtn>
             </div>
           </VCardTitle>
           <VCardText class="pa-0">

@@ -151,6 +151,14 @@ const cancelInvoice = async (invoice: any) => {
         Facturación
       </h4>
       <VBtn
+        color="success"
+        prepend-icon="tabler-file-spreadsheet"
+        href="/api/invoices/export"
+        target="_blank"
+      >
+        Exportar Excel
+      </VBtn>
+      <VBtn
         color="primary"
         prepend-icon="tabler-plus"
         to="/billing/new"
