@@ -180,16 +180,12 @@ const addComment = async () => {
           >
             Llamar
           </VBtn>
-          <VBtn
+          <WhatsAppButton
             v-if="(lead as any).telefono"
-            :href="`https://wa.me/34${(lead as any).telefono?.replace(/\s/g, '')}`"
-            target="_blank"
-            color="success"
+            :phone="(lead as any).telefono"
+            :message="`Hola ${(lead as any).nombre}, le contactamos desde el despacho Garriga & Asociados respecto a su consulta sobre ${(lead as any).area}.`"
             size="small"
-            prepend-icon="tabler-brand-whatsapp"
-          >
-            WhatsApp
-          </VBtn>
+          />
           <VBtn
             color="primary"
             size="small"

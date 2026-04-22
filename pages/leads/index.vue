@@ -258,18 +258,39 @@ const formatDate = (date: string) => {
 
         <!-- Acciones -->
         <template #item.actions="{ item }">
-          <VBtn
-            icon
-            size="x-small"
-            variant="text"
-            color="primary"
-            @click="openAssignDialog(item)"
-          >
-            <VIcon
-              icon="tabler-user-check"
-              size="18"
+          <div class="d-flex gap-1 align-center">
+            <WhatsAppButton
+              v-if="item.telefono"
+              :phone="item.telefono"
+              :message="`Hola ${item.nombre}, le contactamos desde el despacho Garriga & Asociados respecto a su consulta sobre ${item.area}.`"
+              size="x-small"
+              variant="tonal"
             />
-          </VBtn>
+            <VBtn
+              icon
+              size="x-small"
+              variant="text"
+              color="primary"
+              @click="openAssignDialog(item)"
+            >
+              <VIcon
+                icon="tabler-user-check"
+                size="18"
+              />
+            </VBtn>
+            <VBtn
+              icon
+              size="x-small"
+              variant="text"
+              color="secondary"
+              :to="`/leads/${item._id}`"
+            >
+              <VIcon
+                icon="tabler-eye"
+                size="18"
+              />
+            </VBtn>
+          </div>
         </template>
       </VDataTable>
 
