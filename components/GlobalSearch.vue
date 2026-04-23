@@ -12,9 +12,11 @@ const search = async (query: string) => {
 
   isLoading.value = true
   try {
-    const [leads, contacts] = await Promise.all([
+    const [leads, contacts, cases, invoices] = await Promise.all([
       $fetch('/api/leads', { query: { search: query, limit: 5 } }) as any,
       $fetch('/api/contacts', { query: { search: query, limit: 5 } }) as any,
+      $fetch('/api/cases', { query: { search: query, limit: 5 } }) as any,
+      $fetch('/api/invoices', { query: { search: query, limit: 5 } }) as any,
     ])
 
     const leadResults = (leads?.data || []).map((l: any) => ({
@@ -35,7 +37,25 @@ const search = async (query: string) => {
       to: `/contacts/${c._id}`,
     }))
 
-    searchResults.value = [...leadResults, ...contactResults]
+    const caseResults = (cases?.data || []).map((c: any) => ({
+      type: 'case',
+      id: c._id,
+      title: c.number,
+      subtitle: c.title,
+      icon: 'tabler-folder',
+      to: `/cases/${c._id}`,
+    }))
+
+    const invoiceResults = (invoices?.data || []).map((i: any) => ({
+      type: 'invoice',
+      id: i._id,
+      title: i.number,
+      subtitle: i.client?.name,
+      icon: 'tabler-file-invoice',
+      to: `/billing/${i._id}`,
+    }))
+
+    searchResults.value = [...leadResults, ...contactResults, ...caseResults, ...invoiceResults]
   }
   catch {
     searchResults.value = []
@@ -52,7 +72,7 @@ const goTo = (item: any) => {
   isDialogVisible.value = false
   searchResults.value = []
 }
-</script>
+</script>s
 
 <template>
   <div>
