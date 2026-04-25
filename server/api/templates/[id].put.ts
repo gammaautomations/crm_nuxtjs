@@ -1,5 +1,5 @@
 import { createError, defineEventHandler, getRouterParam, readBody } from 'h3'
-import { validateUpdateTemplateDto } from '~/server/dtos/template.dto'
+import { validateCreateTemplateDto } from '~/server/dtos/templateForm.dto'
 import Template from '~/server/models/Template'
 import { requireAuth } from '~/server/utils/auth.middleware'
 
