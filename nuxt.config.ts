@@ -199,7 +199,7 @@ export default defineNuxtConfig({
 
   nitro: {
     externals: {
-      inline: ['puppeteer-core', '@sparticuz/chromium'],
+      inline: ['puppeteer-core', '@sparticuz/chromium', 'docx'],
     },
     preset: 'node-server',
     trustProxy: true,

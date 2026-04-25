@@ -8,6 +8,7 @@ import { Lead } from '~/server/models/Lead'
 import LegalCase from '~/server/models/LegalCase'
 import { Notification } from '~/server/models/Notification'
 import { Specialty } from '~/server/models/Specialty'
+import Template from '~/server/models/Template'
 import TimeEntry from '~/server/models/TimeEntry'
 import { User } from '~/server/models/User'
 import { connectDB } from '~/server/utils/db'
@@ -36,6 +37,8 @@ export default defineNitroPlugin(async () => {
     console.log('✅ Case ok')
     await Appointment.init()
     console.log('✅ Appointment ok')
+    await Template.init()
+    console.log('✅ Template ok')
     await TimeEntry.init()
     console.log('✅ TimeEntry ok')
     await CaseDocument.init()
