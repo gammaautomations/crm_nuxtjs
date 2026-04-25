@@ -20,3 +20,4 @@ pnpm install puppeteer-core @sparticuz/chromium
 pnpm install googleapis
 pnpm install nodemailer
 pnpm install -D @types/nodemailer
+pnpm install docx

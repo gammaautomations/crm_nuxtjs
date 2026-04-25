@@ -34,6 +34,7 @@
     "chart.js": "4.5.1",
     "cookie-es": "1.2.2",
     "destr": "2.0.5",
+    "docx": "^9.6.1",
     "eslint-plugin-regexp": "2.10.0",
     "express-validator": "^7.3.1",
     "formidable": "^3.5.4",
