@@ -213,7 +213,7 @@ const deleteTemplate = async () => {
                       <AppTextField
                         v-model="manualVars[varName]"
                         :label="varName"
-                        :placeholder="`Valor para {{${varName}}}`"
+                        :placeholder="'Valor para {{' + varName + '}}'"
                         density="compact"
                       />
                     </VCol>
