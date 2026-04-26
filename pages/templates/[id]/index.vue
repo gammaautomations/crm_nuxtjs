@@ -358,7 +358,7 @@ const deleteTemplate = async () => {
                 color="primary"
                 variant="outlined"
               >
-                {{ `{{${v}}}` }}
+                {{ '{{' + v + '}}' }}
               </VChip>
             </div>
           </VCardText>
