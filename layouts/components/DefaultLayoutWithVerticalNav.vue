@@ -92,6 +92,11 @@ const getNavItems = () => {
           icon: { icon: 'tabler-user-cog' },
         },
         {
+          title: 'Plantillas',
+          to: { name: 'templates' },
+          icon: { icon: 'tabler-file-text' },
+        },
+        {
           title: 'Abogados',
           to: { name: 'admin-lawyers' },
           icon: { icon: 'tabler-briefcase' },
