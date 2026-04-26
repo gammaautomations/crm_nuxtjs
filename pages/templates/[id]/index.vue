@@ -8,6 +8,8 @@ const { swalConfirmation } = useSweetAlert()
 
 const { data: tpl, refresh } = await useFetch<any>(`/api/templates/${params.id}`)
 
+  const formatVar = (v: string) => '{{' + v + '}}'
+
 // Datos para el generador
 const { data: casesData } = await useFetch<any>('/api/cases', {
   query: { limit: 100, status: 'open,in_progress' },
@@ -358,7 +360,7 @@ const deleteTemplate = async () => {
                 color="primary"
                 variant="outlined"
               >
-                {{ '{{' + v + '}}' }}
+                {{ formatVar(v) }}
               </VChip>
             </div>
           </VCardText>
